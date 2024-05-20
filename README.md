@@ -8,7 +8,7 @@ PG is an approach to solve Reinforcement Learning (RL) problems, with the aim of
 
 The policy is usually modeled with a parameterized function respect to $\theta$, $\pi_{\theta}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\theta}(a|s) = \mathcal{P} \lbrace A_{t} = a | S_{t} = s \rbrace$, which is the probability of an action $a$ at time step $t$ given the state $s$ at timestep $t$ and the policy’s parameters $\theta$.
 
-Now if we can assure that $\pi$ is a valid probability distribution with respect to ${\theta}$, we can define a performance measure function $J(\theta)$ and use gradient ascent to adjust $\theta$ to find the optimal policy: $\theta_{t + 1} = \theta_{t} + \alpha \nabla J(\theta_{t}).
+Now if we can assure that $\pi$ is a valid probability distribution with respect to ${\theta}$, we can define a performance measure function $J(\theta)$ and use gradient ascent to adjust $\theta$ to find the optimal policy: $\theta_{t + 1} = \theta_{t} + \alpha \nabla J(\theta_{t})$.
 
 
 
