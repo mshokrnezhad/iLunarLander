@@ -57,4 +57,15 @@ This process is implemented in [main.py](REINFORCE/main.py). $G_t$ is estimated 
 
 ### Getting Started
 
+Ensure that you've installed all the packages listed in [requirements.txt](REINFORCE/requirements.txt) and execute [main.py](REINFORCE/main.py). The resulting figures will be saved in [plots](REINFORCE/plots/). Moreover, you can observe the lunar lander and its operations under the agent's control using `env.render()`. For a sample code, refer to [test.py](REINFORCE/test.py).
+
+
 ### Outcome
+
+The average scores (total rewards accumulated) of the lunar lander over 10 training steps:
+
+<img src="REINFORCE/plots/REINFORCE_LunarLander-v2_0.0005_10.png" alt="drawing" width="400"/>
+
+The average scores (total rewards accumulated) of the lunar lander over 1000 training steps:
+
+<img src="REINFORCE/plots/REINFORCE_LunarLander-v2_0.0005_1000.png" alt="drawing" width="400"/>
