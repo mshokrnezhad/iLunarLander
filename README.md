@@ -9,7 +9,7 @@ PG is an approach to solve Reinforcement Learning (RL) problems. The goal of RL 
 The reward function is defined as: 
 
 $$
-J(\theta) = \sum_{s \in \mathbf{\mathcal{S}}} d^{\pi}(s)V^{\pi}(s) = \sum_{s \in \mathbf{\mathcal{S}}} \big{ d^{\pi}(s)V^{\pi}(s) \big}
+J(\theta) = \sum_{s \in \mathbf{\mathcal{S}}} d^{\pi}(s)V^{\pi}(s) = \sum_{s \in \mathbf{\mathcal{S}}} \big( d^{\pi}(s)V^{\pi}(s) \big)
 $$
 
 
