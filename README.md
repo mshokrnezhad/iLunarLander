@@ -2,7 +2,7 @@
 Instructing an Actor-Critic Agent to Land on the Moon
 
 
-
+####################################################################################################################################################################
 
 
 PGN:
@@ -39,3 +39,9 @@ The categorical distribution is a discrete probability distribution for a fixed 
 Each outcome has an associated probability.
 Sampling allows selecting an outcome based on its probability.
 It's useful in reinforcement learning for modeling the agent's policy (action selection probabilities).
+
+
+####################################################################################################################################################################
+
+
+REIFORCE loss function
