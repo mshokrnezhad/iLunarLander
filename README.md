@@ -21,7 +21,7 @@ Now if we can assure that $\pi$ is a valid probability distribution with respect
 
 - Now, it is time to define $J(\mathbf{\theta})$ and calculate its gradient. Sutton & Barto in [this link](http://incompleteideas.net/book/bookdraft2017nov5.pdf) (also explained [here](https://lilianweng.github.io/posts/2018-04-08-policy-gradient/)) worked on this problema and proved that the gradient follows the follwoing equation:
 
-  $$\nabla J(\mathbf{\theta}) \sim  \sum_{s \in \mathbf{\mathcal{S}}} \mu(s) \big( \sum_{a \in \mathbf{\mathcal{A}}} q^{\pi}(s, a) \nabla_{\mathbf{\theta}} \pi_{\mathbf{\theta}}(a|s) \big),$$
+  $$\nabla J(\mathbf{\theta}) = \sum_{s \in \mathbf{\mathcal{S}}} \mu(s) \big( \sum_{a \in \mathbf{\mathcal{A}}} q^{\pi}(s, a) \nabla_{\mathbf{\theta}} \pi_{\mathbf{\theta}}(a|s) \big),$$
   
   where $\mu(s)$ is the probability of being at state $s$ following our stochastic policy $\pi$, and $q$ is an action-value function following this policy.
 
@@ -29,14 +29,27 @@ Now if we can assure that $\pi$ is a valid probability distribution with respect
 
 Now with the policy gradient equation, we can come up with a naive algorithm that makes use of gradient ascent to update our policy parameters. The theorem gives a sum over all states and actions but when we update our parameters, we are only going to be using a sample gradient since there's just no way we can get the gradient for all possible actions and states. The method is called REINFORCE (Monte-Carlo policy gradient), proposed by Sutton & Barto, relying on an estimated return by Monte-Carlo methods using episode samples. REINFORCE works because the expectation of the sample gradient is equal to the actual gradient. In other words:
 
+$$\begin{eqnarray} 
+\nabla J(\mathbf{\theta}) &=& \sum_{s \in \mathbf{\mathcal{S}}} \mu(s) \big( \sum_{a \in \mathbf{\mathcal{A}}} q^{\pi}(s, a) \nabla_{\mathbf{\theta}} \pi_{\mathbf{\theta}}(a|s) \big) \nonumber \\
+&=& \mathbb{E}\_{s \sim \pi} \big[ \sum_{a \in \mathbf{\mathcal{A}}} q^{\pi}(S_{t}, a) \nabla_{\mathbf{\theta}} \pi_{\mathbf{\theta}}(a|S_{t}) \big] \nonumber \\
+&=& \mathbb{E}\_{s \sim \pi} \big[ \sum_{a \in \mathbf{\mathcal{A}}} \pi_{\mathbf{\theta}}(a|S_{t}) q^{\pi}(S_{t}, a) \frac{\nabla_{\mathbf{\theta}} \pi_{\mathbf{\theta}}(a|S_{t})}{\pi_{\mathbf{\theta}}(a|S_{t})} \big] \nonumber \\
+&=& \mathbb{E}\_{s, a \sim \pi} \big[ q^{\pi}(S_{t}, A_{t}) \frac{\nabla_{\mathbf{\theta}} \pi_{\mathbf{\theta}}(A_{t} | S_{t})}{\pi_{\mathbf{\theta}}(A_{t} | S_{t})} \big] \nonumber \\
+&=& \mathbb{E}\_{s, a \sim \pi} \big[ q^{\pi}(S_{t}, A_{t}) \nabla_{\mathbf{\theta}} \ln \pi_{\mathbf{\theta}}(A_{t} | S_{t}) \big] \qquad \text{because } (\ln x)^{'} = \frac{1}{x} \nonumber \\
+&=& \mathbb{E}\_{s, a \sim \pi} \big[ G_t \nabla_{\mathbf{\theta}} \ln \pi_{\mathbf{\theta}}(A_{t} | S_{t}) \big] \qquad \text{because } q^{\pi}(S_{t}, A_{t}) = \mathbb{E}\_{s, a \sim \pi} \big[ G_t | S_{t}, A_{t} \big] \nonumber \\
+\end{eqnarray}$$
 
+Therefore we are able to measure $G_t$ from real sample trajectories and use that to update our policy gradient. It relies on a full trajectory and that’s why it is a Monte-Carlo method.
+The process is pretty straightforward:
 
+1. Initialize the policy parameter $\mathbf{\theta}$ at random.
+  
+2. Generate one trajectory on policy $\pi_{\mathbf{\theta}}$: $S_1, A_1, R_2, S_2, A_2, ..., S_T$.
 
-
-
-
-
-We can write this as an expectation as the expectation of a sample gradient is the same as the actual gradient. Thus we have the following:
+3. For $t = 1, 2, ..., T$:
+   
+   a. Estimate the the return $G_t$;
+  
+   b. Update policy parameters: $\mathbf{\theta} \gets \mathbf{\theta} + \alpha \gamma_t G_t \nabla_{\mathbf{\theta}} \ln \pi_{\mathbf{\theta}}(A_{t} | S_{t})$
 
 
 
