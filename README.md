@@ -4,12 +4,12 @@ Instructing intelligent agents to land on the moon!
 ## REINFORCE
 This project explores the application of Policy Gradient (PG) to train an intelligent agent to successfully land a lunar lander on the moon's surface. 
 
-PG is an approach to solve Reinforcement Learning (RL) problems. The goal of RL is to find an optimal behavior strategy for the agent to obtain optimal rewards. The PG methods target at modeling and optimizing the policy directly. The policy is usually modeled with a parameterized function respect to $\theta$, $\pi_{\theta}(a|s)$. The value of the reward (objective) function depends on this policy and then various algorithms can be applied to optimize e for the best reward. 
+PG is an approach to solve Reinforcement Learning (RL) problems. The goal of RL is to find an optimal behavior strategy for the agent to obtain optimal rewards. The PG methods target at modeling and optimizing the policy directly. The policy is usually modeled with a parameterized function respect to $\theta$, $\pi_{\theta}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. The value of the reward (objective) function depends on this policy and then various algorithms can be applied to optimize e for the best reward. 
 
 The reward function is defined as: 
 
 $$
-J(\thata) = \sum{s \in \mathbf{\mathcal{S}}}
+J(\theta) = \sum_{s \in \mathbf{\mathcal{S}}}
 $$
 
 
