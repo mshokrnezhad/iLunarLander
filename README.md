@@ -8,7 +8,7 @@ PG is an approach to solve Reinforcement Learning (RL) problems, with the aim of
 
 The policy is usually modeled with a parameterized function respect to $\mathbf{\theta}$, $\pi_{\mathbf{\theta}}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\mathbf{\theta}}(a|s) = \mathcal{P} \lbrace A_{t} = a | S_{t} = s \rbrace$, which is the probability of an action $a$ at time step $t$ given the state $s$ at timestep $t$ and the policy’s parameters $\mathbf{\theta}$.
 
-Now if we can assure that $\pi$ is a valid probability distribution with respect to ${\mathbf{\theta}}$, we can define a performance measure function $J(\mathbf{\theta})$ and use gradient ascent to adjust $\mathbf{\theta}$ to find the optimal policy: $\theta_{t + 1} = \mathbf{\theta}_{t} + \alpha \nabla J(\mathbf{\theta}_{t})$.
+Now if we can assure that $\pi$ is a valid probability distribution with respect to ${\mathbf{\theta}}$, we can define a performance measure function $J(\mathbf{\theta})$ and use gradient ascent to adjust $\mathbf{\theta}$ to find the optimal policy: $\mathbf{\theta}_{t + 1} = $.
 
 To ensure the probabilistic validity, a promissing way is to feed the values of each state-action pair ($s, a$) (such as the values produced by a neural network with parameters $\mathbf{\theta}$ after receiving an state), dubbed $h(s, a, \mathbf{\theta})$, into softmax ensuring that $\pi_{\mathbf{\theta}}(a|s) \in (0, 1)$, as follows:
 
@@ -21,7 +21,7 @@ Doing so, action preferences allow the agent to approach a deterministic policy,
 Now, it is time to define $J(\mathbf{\theta})$ and calculate its gradient.Sutton & Barto in [this link](http://incompleteideas.net/book/bookdraft2017nov5.pdf) (also explained [here](https://lilianweng.github.io/posts/2018-04-08-policy-gradient/)) worked on this problema and proved that the gradient follows the follwoing equation:
 
 $$
-\nabla J(\mathbf{\theta}) \equiv  \sum_{s \in \mathbf{\mathcal{S}}} \mu(s) \bbig( \sum_{a \in \mathbf{\mathcal{A}}} q^{\pi}(s, a) \bbig)
+\nabla J(\mathbf{\theta}) \equiv  \sum_{s \in \mathbf{\mathcal{S}}} \mu(s) \big( \sum_{a \in \mathbf{\mathcal{A}}} q^{\pi}(s, a) \big)
 $$
 
 
