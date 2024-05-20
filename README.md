@@ -2,18 +2,23 @@
 Instructing intelligent agents to land on the moon!
 
 ## REINFORCE
-This project explores the application of Policy Gradient (PG) to train an intelligent agent to successfully land a lunar lander on the moon's surface. 
+This project explores the application of Policy Gradient (PG) to train an intelligent agent to successfully land a lunar lander on the moon's surface.
 
-PG is an approach to solve Reinforcement Learning (RL) problems. The goal of RL is to find an optimal behavior strategy for the agent to obtain optimal rewards. The PG methods target at modeling and optimizing the policy directly. The policy is usually modeled with a parameterized function respect to $\theta$, $\pi_{\theta}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. The value of the reward (objective) function depends on this policy and then various algorithms can be applied to optimize e for the best reward. 
+PG is an approach to solve Reinforcement Learning (RL) problems, with the aim of finding an optimal behavior strategy (or policy) for the agent to obtain optimal rewards. The PG methods target at modeling and optimizing the policy directly form the probability distribution of actions (unlike Q learning where the agent selects the best action based on state-action values).
 
-The reward function is defined as: 
+The policy is usually modeled with a parameterized function respect to $\theta$, $\pi_{\theta}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\theta}(a|s) = \mathcal{P}{A_{t} = a | S_{t} = s}$, which is the probability of an action $a$ at time step $t$ given the state $s$ at timestep $t$ and the policy’s parameters θ.
+
+
+
+The value of the reward (objective) function depends on this policy and then various algorithms can be applied to optimize e for the best reward. The reward function is defined as: 
 
 $$
 J(\theta) = \sum_{s \in \mathbf{\mathcal{S}}} d^{\pi}(s)V^{\pi}(s) = \sum_{s \in \mathbf{\mathcal{S}}} \Big( d^{\pi}(s) \sum_{a \in \mathbf{\mathcal{A}}} \pi_{\theta}(a|s) Q^{\pi}(s, a) \Big)
 $$
 
-where d™ (s) is the stationary distribution of Markov chain for πθ (on-policy state distribution under π ). For simplicity, the parameter I would be omitted for the policy πθ when the policy is present in the subscript of other functions; for example, d™ and Q™ should be do and Q if written in full.
-Imagine that you can travel along the Markov chain's states forever, and eventually, as the time progresses, the probability of you ending up with one state becomes unchanged this is the stationary probability for πѳ. d”(s) = limt→∞ P(st = s|80, πθ) is the probability that st = s when starting from so and following policy πe for t steps. Actually, the existence of the stationary distribution of Markov chain is one main reason for why PageRank algorithm works. If you want to read more, check this.
+where $d^{\pi}(s)$ is the stationary distribution of Markov chain for $\pi_{\theta}$ (on-policy state distribution under $\pi$). 
+
+Imagine that you can travel along the Markov chain's states forever, and eventually, as the time progresses, the probability of you ending up with one state becomes unchanged this is the stationary probability for $\pi_{\theta}$. d”(s) = limt→∞ P(st = s|80, πθ) is the probability that st = s when starting from so and following policy πe for t steps. Actually, the existence of the stationary distribution of Markov chain is one main reason for why PageRank algorithm works. If you want to read more, check this.
 It is natural to expect policy-based methods are more useful in the continuous space. Because there is an infinite number of actions and (or) states to estimate the values for and hence value-based approaches are way too expensive computationally in the continuous space. For example, in generalized policy iteration, the policy improvement step arg maxa∈AQ" (s, a) requires a full scan of the action space, suffering from the curse of dimensionality.
 Using gradient ascent, we can move 0 toward the direction suggested by the gradient VeJ(0) to find the best θ for πθ that produces the highest return.
 
