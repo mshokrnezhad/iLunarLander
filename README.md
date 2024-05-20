@@ -1,8 +1,8 @@
 # iLunarLander
-Instructing intelligent agents to land on the moon!
+Instructing intelligent agents to land on the moon utilizing REINFORCE and Acotr-Critic algorithms! Have fun :)
 
 ## REINFORCE
-This project explores the application of Policy Gradient (PG) to train an intelligent agent to successfully land a lunar lander on the moon's surface.
+This sub-repository explores the application of Policy Gradient (PG) to train an intelligent agent to successfully land a lunar lander on the moon's surface.
 
 PG is an approach to solve Reinforcement Learning (RL) problems, with the aim of finding an optimal behavior strategy (or policy) for the agent to obtain optimal rewards. The PG methods target at modeling and optimizing the policy directly form the probability distribution of actions (unlike Q learning where the agent selects the best action based on state-action values).
 
@@ -21,7 +21,7 @@ Doing so, action preferences allow the agent to approach a deterministic policy,
 Now, it is time to define $J(\mathbf{\theta})$ and calculate its gradient.Sutton & Barto in [this link](http://incompleteideas.net/book/bookdraft2017nov5.pdf) (also explained [here](https://lilianweng.github.io/posts/2018-04-08-policy-gradient/)) worked on this problema and proved that the gradient follows the follwoing equation:
 
 $$
-\pi_{\theta}(a|s) = \frac{\exp h(s, a, \theta)}{\sum_{a' \in \mathbf{\mathcal{A}}} \exp h(s, a', \theta)}
+\nabla J(\mathbf{\theta}) \equiv  \sum_{s \in \mathbf{\mathcal{S}}} \mu(s) \bbig( \sum_{a \in \mathbf{\mathcal{A}}} q^{\pi}(s, a) \bbig)
 $$
 
 
