@@ -44,4 +44,4 @@ It's useful in reinforcement learning for modeling the agent's policy (action se
 ####################################################################################################################################################################
 
 
-REIFORCE loss function
+REIFORCE 
