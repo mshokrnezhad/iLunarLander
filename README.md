@@ -9,7 +9,7 @@ PG is an approach to solve Reinforcement Learning (RL) problems. The goal of RL 
 The reward function is defined as: 
 
 $$
-J(\theta) = \sum_{s \in \mathbf{\mathcal{S}}} d^{\pi}(s)V^{\pi}(s) = \sum_{s \in \mathbf{\mathcal{S}}} \big( d^{\pi}(s) \sum_{a \in \mathbf{\mathcal{A}}} \pi_{\theta}(a|s) Q^{\pi}(s, a) \big)
+J(\theta) = \sum_{s \in \mathbf{\mathcal{S}}} d^{\pi}(s)V^{\pi}(s) = \sum_{s \in \mathbf{\mathcal{S}}} \Big( d^{\pi}(s) \sum_{a \in \mathbf{\mathcal{A}}} \pi_{\theta}(a|s) Q^{\pi}(s, a) \Big)
 $$
 
 where d™ (s) is the stationary distribution of Markov chain for πθ (on-policy state distribution under π ). For simplicity, the parameter I would be omitted for the policy πθ when the policy is present in the subscript of other functions; for example, d™ and Q™ should be do and Q if written in full.
