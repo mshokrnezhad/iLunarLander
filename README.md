@@ -6,7 +6,7 @@ This project explores the application of Policy Gradient (PG) to train an intell
 
 PG is an approach to solve Reinforcement Learning (RL) problems, with the aim of finding an optimal behavior strategy (or policy) for the agent to obtain optimal rewards. The PG methods target at modeling and optimizing the policy directly form the probability distribution of actions (unlike Q learning where the agent selects the best action based on state-action values).
 
-The policy is usually modeled with a parameterized function respect to $\theta$, $\pi_{\theta}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\theta}(a|s) = \mathcal{P} `\{` A_{t} = a | S_{t} = s `\}`$, which is the probability of an action $a$ at time step $t$ given the state $s$ at timestep $t$ and the policy’s parameters θ.
+The policy is usually modeled with a parameterized function respect to $\theta$, $\pi_{\theta}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\theta}(a|s) = \mathcal{P} \lbrace A_{t} = a | S_{t} = s \rbrace$, which is the probability of an action $a$ at time step $t$ given the state $s$ at timestep $t$ and the policy’s parameters θ.
 
 
 
