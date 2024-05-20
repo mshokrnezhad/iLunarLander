@@ -27,9 +27,6 @@ Now ff we ensure that $\pi$ is a valid probability distribution with respect to 
 
 ### Algorithm
 
-Now with the policy gradient equation, we can come up with a naive algorithm that makes use of gradient ascent to update our policy parameters. The theorem gives a sum over all states and actions but when we update our parameters, we are only going to be using a sample gradient since there's just no way we can get the gradient for all possible actions and states. The method is called REINFORCE (Monte-Carlo policy gradient), proposed by Sutton & Barto, relying on an estimated return by Monte-Carlo methods using episode samples. REINFORCE works because the expectation of the sample gradient is equal to the actual gradient. In other words:
-
-
 Now equipped with the policy gradient equation, we can devise a straightforward algorithm leveraging gradient ascent to adjust our policy parameters. While the theorem encompasses a summation over all states and actions, given the impracticality of computing gradients for all potential states and actions, we can rely on a sampled gradient. This method is known as REINFORCE (Monte-Carlo policy gradient), introduced by Sutton & Barto, which relies on estimated returns obtained through Monte-Carlo methods using episode samples. REINFORCE proves effective because the expectation of the sample gradient aligns with the actual gradient. In essence:
 
 $$\begin{eqnarray} 
