@@ -11,6 +11,7 @@ The reward function is defined as:
 $$
 J(\theta) = \sum_{s \in \mathbf{\mathcal{S}}} d^{\pi}(s)V^{\pi}(s) = \sum_{s \in \mathbf{\mathcal{S}}} \big( d^{\pi}(s) \sum_{a \in \mathbf{\mathcal{A}}} \pi_{\theta}(a|s) Q^{\pi}(s, a) \big)
 $$
+
 where d™ (s) is the stationary distribution of Markov chain for πθ (on-policy state distribution under π ). For simplicity, the parameter I would be omitted for the policy πθ when the policy is present in the subscript of other functions; for example, d™ and Q™ should be do and Q if written in full.
 Imagine that you can travel along the Markov chain's states forever, and eventually, as the time progresses, the probability of you ending up with one state becomes unchanged this is the stationary probability for πѳ. d”(s) = limt→∞ P(st = s|80, πθ) is the probability that st = s when starting from so and following policy πe for t steps. Actually, the existence of the stationary distribution of Markov chain is one main reason for why PageRank algorithm works. If you want to read more, check this.
 It is natural to expect policy-based methods are more useful in the continuous space. Because there is an infinite number of actions and (or) states to estimate the values for and hence value-based approaches are way too expensive computationally in the continuous space. For example, in generalized policy iteration, the policy improvement step arg maxa∈AQ" (s, a) requires a full scan of the action space, suffering from the curse of dimensionality.
