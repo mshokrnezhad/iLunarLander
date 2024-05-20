@@ -6,11 +6,19 @@ This project explores the application of Policy Gradient (PG) to train an intell
 
 PG is an approach to solve Reinforcement Learning (RL) problems, with the aim of finding an optimal behavior strategy (or policy) for the agent to obtain optimal rewards. The PG methods target at modeling and optimizing the policy directly form the probability distribution of actions (unlike Q learning where the agent selects the best action based on state-action values).
 
-The policy is usually modeled with a parameterized function respect to $\theta$, $\pi_{\theta}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\theta}(a|s) = \mathcal{P} \lbrace A_{t} = a | S_{t} = s \rbrace$, which is the probability of an action $a$ at time step $t$ given the state $s$ at timestep $t$ and the policy’s parameters $\theta$.
+The policy is usually modeled with a parameterized function respect to $\mathbf{\theta}$, $\pi_{\theta}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\theta}(a|s) = \mathcal{P} \lbrace A_{t} = a | S_{t} = s \rbrace$, which is the probability of an action $a$ at time step $t$ given the state $s$ at timestep $t$ and the policy’s parameters $\theta$.
 
 Now if we can assure that $\pi$ is a valid probability distribution with respect to ${\theta}$, we can define a performance measure function $J(\theta)$ and use gradient ascent to adjust $\theta$ to find the optimal policy: $\theta_{t + 1} = \theta_{t} + \alpha \nabla J(\theta_{t})$.
 
-To ensure the probabilistic validity, a promissing way is to feed the values of each state-action pair ($s, a$) (such as the values produced by a neural network with parameters $\theta$ after receiving an state), dubbed $h(s, a, \theta)$, into softmax, ensuring that $\pi_{\theta}(a|s) \in (0, 1)$, as follows:
+To ensure the probabilistic validity, a promissing way is to feed the values of each state-action pair ($s, a$) (such as the values produced by a neural network with parameters $\theta$ after receiving an state), dubbed $h(s, a, \theta)$, into softmax ensuring that $\pi_{\theta}(a|s) \in (0, 1)$, as follows:
+
+$$
+\pi_{\theta}(a|s) = \frac{\exp h(s, a, \theta)}{\sum_{a' \in \mathbf{\mathcal{A}}} \exp h(s, a', \theta)}
+$$
+
+Doing so, action preferences allow the agent to approach a deterministic policy, forming a probability distribution. This means that the probability of the best action will be driven to approach 1. Another advantage is that the action probability is adjusted smoothly over a function of the policy parameter, which solves the problem of overestimation of the importance of a selected action and converge into a suboptimal policy in approaches such as epsilon greedy.
+
+Now, it is time to define $J(\theta)$ and calculate its gradient.Sutton & Barto in [this link](http://incompleteideas.net/book/bookdraft2017nov5.pdf) (also explained [here](https://lilianweng.github.io/posts/2018-04-08-policy-gradient/)) worked on this problema and proved that the gradient follows the follwoing equation:
 
 $$
 \pi_{\theta}(a|s) = \frac{\exp h(s, a, \theta)}{\sum_{a' \in \mathbf{\mathcal{A}}} \exp h(s, a', \theta)}
