@@ -10,7 +10,7 @@ The policy is usually modeled with a parameterized function respect to $\theta$,
 
 Now if we can assure that $\pi$ is a valid probability distribution with respect to ${\theta}$, we can define a performance measure function $J(\theta)$ and use gradient ascent to adjust $\theta$ to find the optimal policy: $\theta_{t + 1} = \theta_{t} + \alpha \nabla J(\theta_{t})$.
 
-To ensure the probabilistic validity, a promissing way is to feed the values of each state-action pair ($s, a$) (such as the values produced by a neural network with parameters $\theta$ after receiving an state), dubbed $h(s, a, \thata)$, into softmax, ensuring that $\pi_{\theta}(a|s) \in (0, 1)$, as follows:
+To ensure the probabilistic validity, a promissing way is to feed the values of each state-action pair ($s, a$) (such as the values produced by a neural network with parameters $\theta$ after receiving an state), dubbed $h(s, a, \theta)$, into softmax, ensuring that $\pi_{\theta}(a|s) \in (0, 1)$, as follows:
 
 $$
 \pi_{\theta}(a|s) = \frac{\exp h(s, a, \theta)}{\sum_{a' \in \mathbf{\mathcal{A}}} \exp h(s, a', \theta)}
