@@ -1,4 +1,5 @@
 import gym
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     env = gym.make("LunarLander-v2", render_mode="human")
