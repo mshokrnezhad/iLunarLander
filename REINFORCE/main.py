@@ -1,8 +1,9 @@
 import sys
-from pathlib import Path
-current_dir = Path(__file__).parent
-print(current_dir)
-sys.path.append(str(current_dir.parent))
+import os
+current_dir = os.path.dirname(__file__)
+parent_dir = os.path.dirname(current_dir)
+print(current_dir, parent_dir)
+sys.path.append(parent_dir)
 import gym 
 import matplotlib.pyplot as plt 
 import numpy as np
