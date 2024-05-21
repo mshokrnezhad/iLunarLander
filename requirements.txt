@@ -1,5 +1,6 @@
 pip cache purge
 pip install box2d-py==2.3.8 --no-binary :all:
+pip install pygame
 pip install gym==0.26.2
 pip install matplotlib==3.8.4
 pip install numpy==1.26.4
