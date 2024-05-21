@@ -1,4 +1,9 @@
 # iLunarLander
+
+<div align="center">
+  <img src="iLunarLander.jpg" alt="drawing" width="400"/>
+</div>
+
 Guiding intelligent agents to successfully land [LunarLander-v2 of GYM](https://gymnasium.farama.org/environments/box2d/lunar_lander/) on the moon through the implementation of REINFORCE and Actor-Critic algorithms! Enjoy the journey! 😄
 
 ## REINFORCE
