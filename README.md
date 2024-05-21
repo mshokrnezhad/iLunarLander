@@ -64,12 +64,6 @@ Ensure that you've installed all the packages listed in [requirements.txt](REINF
 
 ### Outcome
 
-The average scores (total rewards accumulated) of the lunar lander over 10 training steps:
-
-<div align="center">
-  <img src="REINFORCE/plots/REINFORCE_LunarLander-v2_0.0005_10.png" alt="drawing" width="400"/>
-</div>
-
 The average scores (total rewards accumulated) of the lunar lander over 1000 training steps:
 
 <div align="center">
