@@ -1,7 +1,9 @@
 import sys
 import os
 current_dir = os.path.dirname(__file__)
+#current_dir = "/users/mshokrne/iLunarLander/REINFORCE"
 parent_dir = os.path.dirname(current_dir)
+#parent_dir = "/users/mshokrne/iLunarLander"
 print(current_dir, parent_dir)
 sys.path.append(parent_dir)
 import gym 
