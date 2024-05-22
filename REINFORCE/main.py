@@ -15,14 +15,14 @@ if __name__ == "__main__":
     env_name = "LunarLander-v2"
     env = gym.make(env_name, render_mode="rgb_array")
     env_max_num_steps = 1000
-    num_games = 10
+    num_games = 3000
     learning_rate = 0.0005
     file_name = "REINFORCE_" + env_name + "_" + str(learning_rate) + "_" + str(num_games)
     scores_plot_file = str(current_dir) + "/plots/" + file_name + ".png"
     final_landing_file = str(current_dir) + "/plots/" + file_name + ".gif"
     model_file = str(current_dir) + "/models/" + file_name
     agent = PG_Agent(learning_rate, 0.99, [8], 4, model_file) 
-    mode = "test" # select among {"train", "test"}
+    mode = "train" # select among {"train", "test"}
     
     if(mode == "train"): 
         scores = []

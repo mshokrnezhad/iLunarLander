@@ -39,7 +39,7 @@ class PGN(nn.Module):
 
     def load_model(self):
         print(f'Loading {self.model_file}...')
-        self.load_state_dict(T.load(self.model_file))
+        self.load_state_dict(T.load(self.model_file, map_location = T.device('cpu')))
         
         
         
