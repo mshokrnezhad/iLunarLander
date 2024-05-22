@@ -15,7 +15,7 @@ if __name__ == "__main__":
     env_name = "LunarLander-v2"
     env = gym.make(env_name, render_mode="rgb_array", max_episode_steps = 2)
     env_max_num_steps = 1000
-    num_games = 10
+    num_games = 3000
     learning_rate = 5e-6
     file_name = "TD-ActorCritic_" + env_name + "_" + str(learning_rate) + "_" + str(num_games)
     scores_plot_file = str(current_dir) + "/plots/" + file_name + ".png"
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     agent = AC_Agent(learning_rate, 0.99, [8], 2048, 1536, 4, model_file) 
     mode = "test" # select among {"train", "test"}
     
-    if(mode == "Train"): 
+    if(mode == "train"): 
         scores = []
         best_avg_score = -np.inf
         

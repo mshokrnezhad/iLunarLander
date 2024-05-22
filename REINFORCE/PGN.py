@@ -16,7 +16,7 @@ import torch.nn.functional as F #3
 import torch.optim as optim #4 
 
 class PGN(nn.Module):
-    def __init__(self, learning_rate, input_size, actions_num):
+    def __init__(self, learning_rate, input_size, actions_num, model_file):
         super(PGN, self).__init__() #5
         self.fcl1 = nn.Linear(*input_size, 128) #6 
         self.fcl2 = nn.Linear(128, 128)
@@ -24,6 +24,7 @@ class PGN(nn.Module):
         self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
         self.to(self.device) #7 
+        self.model_file = model_file
             
     def forward(self, state):
         x = F.relu(self.fcl1(state))
@@ -31,6 +32,14 @@ class PGN(nn.Module):
         x = self.fcl3(x)
         
         return x        
+    
+    def save_model(self):
+        print(f'Saving {self.model_file}...')
+        T.save(self.state_dict(), self.model_file)
+
+    def load_model(self):
+        print(f'Loading {self.model_file}...')
+        self.load_state_dict(T.load(self.model_file))
         
         
         

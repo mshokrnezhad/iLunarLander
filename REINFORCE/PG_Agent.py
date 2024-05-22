@@ -33,12 +33,12 @@ import torch.optim as optim #4
 from PGN import PGN
 
 class PG_Agent():
-    def __init__(self, learning_rate, gamma, input_size, actions_num):
+    def __init__(self, learning_rate, gamma, input_size, actions_num, model_file):
         self.gamma = gamma
         self.learning_rate = learning_rate
         self.reward_memory = []
         self.action_memory = []
-        self.PGN = PGN(learning_rate, input_size, actions_num)
+        self.PGN = PGN(learning_rate, input_size, actions_num, model_file)
         
     def store_reward(self, reward):
         self.reward_memory.append(reward)

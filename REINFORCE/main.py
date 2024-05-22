@@ -1,10 +1,9 @@
 import sys
 import os
 current_dir = os.path.dirname(__file__)
-#current_dir = "/users/mshokrne/iLunarLander/REINFORCE"
 parent_dir = os.path.dirname(current_dir)
+#current_dir = "/users/mshokrne/iLunarLander/REINFORCE"
 #parent_dir = "/users/mshokrne/iLunarLander"
-print(current_dir, parent_dir)
 sys.path.append(parent_dir)
 import gym 
 import matplotlib.pyplot as plt 
@@ -12,41 +11,65 @@ import numpy as np
 from PG_Agent import PG_Agent
 from utils import save_frames_as_gif, plot_learning_curve
 
-
 if __name__ == "__main__":
     env_name = "LunarLander-v2"
     env = gym.make(env_name, render_mode="rgb_array")
+    env_max_num_steps = 1000
     num_games = 10
-    agent = PG_Agent(0.0005, 0,99, [8], 4) 
-    file_name = "REINFORCE_" + env_name + "_" + str(agent.learning_rate) + "_" + str(num_games)
+    learning_rate = 0.0005
+    file_name = "REINFORCE_" + env_name + "_" + str(learning_rate) + "_" + str(num_games)
     scores_plot_file = str(current_dir) + "/plots/" + file_name + ".png"
-    first_landing_gif_file = str(current_dir) + "/plots/" + file_name + "_first.gif"
-    final_landing_gif_file = str(current_dir) + "/plots/" + file_name + "_final.gif"
+    final_landing_file = str(current_dir) + "/plots/" + file_name + ".gif"
+    model_file = str(current_dir) + "/models/" + file_name
+    agent = PG_Agent(learning_rate, 0.99, [8], 4, model_file) 
+    mode = "test" # select among {"train", "test"}
     
-    scores = []
-    #first_frames = []
-    #final_frames = []
+    if(mode == "train"): 
+        scores = []
+        best_avg_score = -np.inf
+        
+        for t in range(num_games):
+            done = False
+            score = 0
+            state = env.reset()[0]
+            step = 0
+            while not done:
+                step += 1
+                action = agent.act(state)
+                state_, reward, done, info, _ = env.step(action)
+                score += reward 
+                agent.store_reward(reward)
+                state = state_
+                if(step >= env_max_num_steps):
+                    done = True
+            agent.learn()
+            scores.append(score)
+            
+            avg_score = np.mean(scores[-100:])
+            print("step", t, "- score %.2f" %score, "- avg_score %.2f" %avg_score)
+            if avg_score > best_avg_score:
+                agent.PGN.save_model()
+                best_avg_score = avg_score
+        
+        plot_learning_curve(scores, scores_plot_file)       
     
-    for t in range(num_games):
+    if(mode == "test"):
+        agent.PGN.load_model()
+        
+        frames = []
         done = False
         score = 0
         state = env.reset()[0]
+        step = 0
         while not done:
+            step += 1
             action = agent.act(state)
             state_, reward, done, info, _ = env.step(action)
             score += reward 
-            #if(t == 0):
-            #    first_frames.append(env.render())
-            #if(t == num_games - 1):
-            #    final_frames.append(env.render())
-            agent.store_reward(reward)
             state = state_
-        agent.learn()
-        scores.append(score)
-        
-        avg_score_ = np.mean(scores[-100:])
-        print("step", t, "- score %.2f" %score, "- avg_score %.2f" %avg_score_)
-    
-    #save_frames_as_gif(first_frames, first_landing_gif_file)
-    #save_frames_as_gif(final_frames, final_landing_gif_file)
-    plot_learning_curve(scores, scores_plot_file)            
+            frames.append(env.render())
+            if(step >= env_max_num_steps):
+                done = True
+
+        print("score %.2f" %score)      
+        save_frames_as_gif(frames, final_landing_file)               
