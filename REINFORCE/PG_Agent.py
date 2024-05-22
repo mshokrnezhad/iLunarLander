@@ -29,12 +29,12 @@ import torch.optim as optim #to optimize the weights
 from PGN import PGN
 
 class PG_Agent():
-    def __init__(self, learning_rate, input_dim, actions_num = 4, gamma = 0.99):
+    def __init__(self, learning_rate, input_size, actions_num = 4, gamma = 0.99):
         self.gamma = gamma
         self.learning_rate = learning_rate
         self.reward_memory = []
         self.action_memory = []
-        self.PGN = PGN(learning_rate, input_dim, actions_num)
+        self.PGN = PGN(learning_rate, input_size, actions_num)
         
     def store_reward(self, reward):
         self.reward_memory.append(reward)
