@@ -17,7 +17,7 @@ if __name__ == "__main__":
     env_name = "LunarLander-v2"
     env = gym.make(env_name, render_mode="rgb_array")
     num_games = 10
-    agent = PG_Agent(0.0005, [8], 4, 0.99) 
+    agent = PG_Agent(0.0005, 0,99, [8], 4) 
     file_name = "REINFORCE_" + env_name + "_" + str(agent.learning_rate) + "_" + str(num_games)
     scores_plot_file = str(current_dir) + "/plots/" + file_name + ".png"
     first_landing_gif_file = str(current_dir) + "/plots/" + file_name + "_first.gif"
