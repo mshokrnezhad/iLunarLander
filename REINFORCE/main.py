@@ -22,7 +22,7 @@ if __name__ == "__main__":
     final_landing_file = str(current_dir) + "/plots/" + file_name + ".gif"
     model_file = str(current_dir) + "/models/" + file_name
     agent = PG_Agent(learning_rate, 0.99, [8], 4, model_file) 
-    mode = "train" # select among {"train", "test"}
+    mode = "test" # select among {"train", "test"}
     
     if(mode == "train"): 
         scores = []
