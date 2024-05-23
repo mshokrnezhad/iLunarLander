@@ -103,12 +103,30 @@ The procedure is as follows:
 
    a. The actor selects an action $A_t$ based on the current policy, $\pi_{\theta}$.
    
-   b. The action $A_t$ is executed, and the environment returns a new state $s_{t+1}$ and a reward $r_t$.
+   b. The action $A_t$ is executed, and the environment returns a new state $S_{t+1}$ and a reward $R_t$.
 
    c. The critic evaluates the taken action by computing the temporal difference (TD) error, $\delta_t$.
 
-   d. Update the critic’s value function parameters, $\omega$, using the TD error: $\omega \leftarrow \omega + \alpha_{critic} \delta_t \nabla_{\omega} \mathcal{V}\_{\omega}(s_{t})$
+   d. Update the critic’s value function parameters, $\omega$, using the TD error: $\omega \leftarrow \omega + \alpha_{critic} \delta_t \nabla_{\omega} \mathcal{V}\_{\omega}(S_{t})$
+
+   e. Update the Actor’s policy distribution parameters, $\theta$, using the TD error: $\theta \gets \theta + \alpha_{actor} \gamma_t \delta_t \nabla_{\theta} \ln \pi_{\theta}(A_{t} | S_{t})$
 ***
+
+This process is implemented in [main.py](TD-ActorCritic/main.py). Since the lunar landing problem is not overly complex, a single shared PyTorch-based DNN, defined in [ACN.py](TD-ActorCritic/ACN.py), is used to estimate both action probabilities and state values. These estimations are then processed in [AC_Agent.py](TD-ActorCritic/AC_Agent.py). The resulting per-action probabilities are fed into a Categorical distribution for action selection, similar to the REINFORCE algorithm.
+
+### Outcomes
+
+The average scores (total rewards accumulated) of the lunar lander over 3000 training steps:
+
+<div align="center">
+  <img src="TD-ActorCritic/plots/TD-ActorCritic_LunarLander-v2_5e-06_3000.png" alt="drawing" width="400"/>
+</div>
+
+The following .gif file demonstrates the performance of the lunar lander over 3000 training steps:
+
+<div align="center">
+  <img src="TD-ActorCritic/plots/TD-ActorCritic_LunarLander-v2_5e-06_3000.gif" alt="drawing" width="400"/>
+</div>
 
 ## Getting Started
 
