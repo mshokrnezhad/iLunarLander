@@ -78,6 +78,8 @@ The following .gif file demonstrates the performance of the lunar lander over 30
   <img src="REINFORCE/plots/REINFORCE_LunarLander-v2_0.0005_3000.gif" alt="drawing" width="400"/>
 </div>
 
+## [TD-ActorCritic](TD-ActorCritic)
+
 
 ## Getting Started
 
