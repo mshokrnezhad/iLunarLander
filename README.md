@@ -6,6 +6,11 @@
 
 Training [LunarLander-v2 of GYM](https://gymnasium.farama.org/environments/box2d/lunar_lander/) to successfully land on the moon through the implementation of policy gradient algorithms! Enjoy the journey! 😄
 
+## Table of contents
+* [Policy Gradient (PG)](#policy-gradient-pg)
+* [REINFORCE](#reinforce)
+* [TD-ActorCritic](#tc-actorcritic)
+
 ## Policy Gradient (PG)
 
 PG represents an approach to tackling Reinforcement Learning (RL) challenges, striving to discover an optimal behavioral strategy (or policy) for the agent to acquire maximum rewards. PG methods focus on modeling and enhancing the policy directly from the probability distribution of actions, contrasting with Q-learning where the agent selects the best action directly based on state-action values.
@@ -26,7 +31,7 @@ Now if we ensure that $\pi$ is a valid probability distribution with respect to 
   
   where $\mu(s)$ represents the probability of being in state $s$ according to our stochastic policy $\pi$, while $Q$ denotes an action-value function aligned with this policy.
 
-## REINFORCE 
+## [REINFORCE](REINFORCE) 
 
 Now equipped with the policy gradient equation, we can devise a straightforward algorithm leveraging gradient ascent to adjust our policy parameters. While the theorem encompasses a summation over all states and actions, given the impracticality of computing gradients for all potential states and actions, we can rely on a sampled gradient. This method is known as REINFORCE (Monte-Carlo policy gradient), introduced by Sutton & Barto, which relies on estimated returns obtained through Monte-Carlo methods using episode samples. REINFORCE proves effective because the expectation of the sample gradient aligns with the actual gradient. In essence:
 
