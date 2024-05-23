@@ -15,7 +15,7 @@ Training [LunarLander-v2 of GYM](https://gymnasium.farama.org/environments/box2d
 
 PG represents an approach to tackling Reinforcement Learning (RL) challenges, striving to discover an optimal behavioral strategy (or policy) for the agent to acquire maximum rewards. PG methods focus on modeling and enhancing the policy directly from the probability distribution of actions, contrasting with Q-learning where the agent selects the best action directly based on state-action values.
 
-The policy is typically represented by a parameterized function with respect to $\mathbf{\theta}$, denoted as $\pi_{\mathbf{\theta}}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\mathbf{\theta}}(a|s) = \mathcal{P} \lbrace A_{t} = a | S_{t} = s \rbrace$ signifies the probability of an action $a$ at time step $t$, given the state $s$ at timestep $t$ and the parameters $\mathbf{\theta}$ of the policy.
+The policy is typically represented by a parameterized function with respect to $\theta$, denoted as $\pi_{\mathbf{\theta}}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\mathbf{\theta}}(a|s) = \mathcal{P} \lbrace A_{t} = a | S_{t} = s \rbrace$ signifies the probability of an action $a$ at time step $t$, given the state $s$ at timestep $t$ and the parameters $\mathbf{\theta}$ of the policy.
 
 Now if we ensure that $\pi$ is a valid probability distribution with respect to ${\mathbf{\theta}}$, we can then define a performance measure function $J(\mathbf{\theta})$ and employ gradient ascent to adjust $\mathbf{\theta}$ in order to discover the optimal policy: $\mathbf{\theta}\_{t+1} = \mathbf{\theta}\_{t} + \alpha \nabla J(\mathbf{\theta}\_{t})$.
 
@@ -53,16 +53,16 @@ The procedure is rather straightforward:
 ***
 1. Initialize the policy parameter $\mathbf{\theta}$ at random.
    
-3. Generate one trajectory on policy $\pi_{\mathbf{\theta}}$: $S_1, A_1, R_2, S_2, A_2, ..., S_T$.
+2. Generate one trajectory on policy $\pi_{\mathbf{\theta}}$: $S_1, A_1, R_2, S_2, A_2, ..., S_T$.
    
-5. For $t = 1, 2, ..., T$:
+3. For $t = 1, 2, ..., T$:
 
    a. Estimate the return $G_t$;
    
    b. Update policy parameters: $\mathbf{\theta} \gets \mathbf{\theta} + \alpha \gamma_t G_t \nabla_{\mathbf{\theta}} \ln \pi_{\mathbf{\theta}}(A_{t} | S_{t})$
 ***
 
-This process is implemented in [main.py](REINFORCE/main.py). $G_t$ is estimated using a Deep Neural Network (DNN) in [PGN.py](REINFORCE/PGN.py), then processed through softmax in [PG_Agent.py](REINFORCE/PG_Agent.py). The resulting per-action probabilities are fed into the Categorical distribution for action selection. The categorical distribution is a discrete probability distribution used to model scenarios where there are a fixed number of possible outcomes, each with an associated probability. It's commonly employed in reinforcement learning to select actions from a set of discrete choices. A fundamental function of the categorical distribution is sampling, which involves randomly selecting an outcome based on its associated probability.
+This process is implemented in [main.py](REINFORCE/main.py). $G_t$ is estimated using a PyTorch-based Deep Neural Network (DNN) in [PGN.py](REINFORCE/PGN.py), then processed through softmax in [PG_Agent.py](REINFORCE/PG_Agent.py). The resulting per-action probabilities are fed into the Categorical distribution for action selection. The categorical distribution is a discrete probability distribution used to model scenarios where there are a fixed number of possible outcomes, each with an associated probability. It's commonly employed in reinforcement learning to select actions from a set of discrete choices. A fundamental function of the categorical distribution is sampling, which involves randomly selecting an outcome based on its associated probability.
 
 ### Outcomes
 
@@ -92,6 +92,23 @@ where $\mathcal{V}\_{\mathbf{w}}(s_{t})$ is the value of the current state, $\ma
 
 By incorporating both the actor and the critic, the Actor-Critic method effectively combines policy optimization with value calibration, leading to more efficient and robust learning.
 
+### Algorithm
+
+The procedure is as follows:
+
+***
+1. Initialize the policy parameter $\mathbf{\theta}$ and the value function parameter $\mathbf{w}$ at random.
+   
+2. For $t = 1, 2, ..., T$:
+
+   a. The actor selects an action $A_t$ based on the current policy, $\pi_{\theta}$.
+   
+   b. The action $A_t$ is executed, and the environment returns a new state $s_{t+1}$ and a reward $r_t$.
+
+   c. The critic evaluates the taken action by computing the temporal difference (TD) error, $\delta_t$.
+
+   d. Update the critic’s value function parameters, $\mathbf{w}$, using the TD error: $\mathbf{w} \leftarrow \mathbf{w} + \alpha_{critic} \delta_t \nabla_{\mathbf{w}} \mathcal{V}\_{\mathbf{w}}(s_{t})$
+***
 
 ## Getting Started
 
