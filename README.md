@@ -50,15 +50,17 @@ Hence, we can compute $G_t$ from actual sample trajectories and utilize it to ad
 
 The procedure is rather straightforward:
 
+***
 1. Initialize the policy parameter $\mathbf{\theta}$ at random.
   
 2. Generate one trajectory on policy $\pi_{\mathbf{\theta}}$: $S_1, A_1, R_2, S_2, A_2, ..., S_T$.
 
 3. For $t = 1, 2, ..., T$:
    
-   a. Estimate the the return $G_t$;
+   a. Estimate the return $G_t$;
   
    b. Update policy parameters: $\mathbf{\theta} \gets \mathbf{\theta} + \alpha \gamma_t G_t \nabla_{\mathbf{\theta}} \ln \pi_{\mathbf{\theta}}(A_{t} | S_{t})$
+***
 
 This process is implemented in [main.py](REINFORCE/main.py). $G_t$ is estimated using a Deep Neural Network (DNN) in [PGN.py](REINFORCE/PGN.py), then processed through softmax in [PG_Agent.py](REINFORCE/PG_Agent.py). The resulting per-action probabilities are fed into the Categorical distribution for action selection. The categorical distribution is a discrete probability distribution used to model scenarios where there are a fixed number of possible outcomes, each with an associated probability. It's commonly employed in reinforcement learning to select actions from a set of discrete choices. A fundamental function of the categorical distribution is sampling, which involves randomly selecting an outcome based on its associated probability.
 
