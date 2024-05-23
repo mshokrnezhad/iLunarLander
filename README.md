@@ -4,14 +4,10 @@
   <img src="iLunarLander.jpg" alt="drawing" width="400"/>
 </div>
 
-Guiding intelligent agents to successfully land [LunarLander-v2 of GYM](https://gymnasium.farama.org/environments/box2d/lunar_lander/) on the moon through the implementation of REINFORCE and Actor-Critic algorithms! Enjoy the journey! 😄
+Training [LunarLander-v2 of GYM](https://gymnasium.farama.org/environments/box2d/lunar_lander/) to successfully land on the moon through the implementation of policy gradient algorithms! Enjoy the journey! 😄
 
-## REINFORCE
+## Policy Gradient (PG)
 
-### Objetive
-This sub-repository delves into the utilization of Policy Gradient (PG) for training of the corresponding intelligent.
-
-### Approach
 PG represents an approach to tackling Reinforcement Learning (RL) challenges, striving to discover an optimal behavioral strategy (or policy) for the agent to acquire maximum rewards. PG methods focus on modeling and enhancing the policy directly from the probability distribution of actions, contrasting with Q-learning where the agent selects the best action directly based on state-action values.
 
 The policy is typically represented by a parameterized function with respect to $\mathbf{\theta}$, denoted as $\pi_{\mathbf{\theta}}(a|s)$, where $a$ and $s$ represent the action and the state, respectively. $\pi_{\mathbf{\theta}}(a|s) = \mathcal{P} \lbrace A_{t} = a | S_{t} = s \rbrace$ signifies the probability of an action $a$ at time step $t$, given the state $s$ at timestep $t$ and the parameters $\mathbf{\theta}$ of the policy.
@@ -30,7 +26,7 @@ Now if we ensure that $\pi$ is a valid probability distribution with respect to 
   
   where $\mu(s)$ represents the probability of being in state $s$ according to our stochastic policy $\pi$, while $q$ denotes an action-value function aligned with this policy.
 
-### Algorithm
+## REINFORCE 
 
 Now equipped with the policy gradient equation, we can devise a straightforward algorithm leveraging gradient ascent to adjust our policy parameters. While the theorem encompasses a summation over all states and actions, given the impracticality of computing gradients for all potential states and actions, we can rely on a sampled gradient. This method is known as REINFORCE (Monte-Carlo policy gradient), introduced by Sutton & Barto, which relies on estimated returns obtained through Monte-Carlo methods using episode samples. REINFORCE proves effective because the expectation of the sample gradient aligns with the actual gradient. In essence:
 
@@ -57,15 +53,19 @@ Hence, we can compute $G_t$ from actual sample trajectories and utilize it to ad
 
 This process is implemented in [main.py](REINFORCE/main.py). $G_t$ is estimated using a Deep Neural Network (DNN) in [PGN.py](REINFORCE/PGN.py), then processed through softmax in [PG_Agent.py](REINFORCE/PG_Agent.py). The resulting per-action probabilities are fed into the Categorical distribution for action selection. The categorical distribution is a discrete probability distribution used to model scenarios where there are a fixed number of possible outcomes, each with an associated probability. It's commonly employed in reinforcement learning to select actions from a set of discrete choices. A fundamental function of the categorical distribution is sampling, which involves randomly selecting an outcome based on its associated probability.
 
-### Getting Started
-
-Ensure that you've installed all the packages listed in [requirements.txt](REINFORCE/requirements.txt) and execute [main.py](REINFORCE/main.py). The resulting figures will be saved in [plots](REINFORCE/plots/). Moreover, you can observe the lunar lander and its operations under the agent's control using `env.render()`. For a sample code, refer to [test.py](REINFORCE/test.py).
-
-
-### Outcome
-
-The average scores (total rewards accumulated) of the lunar lander over 1000 training steps:
+The average scores (total rewards accumulated) of the lunar lander over 3000 training steps:
 
 <div align="center">
-  <img src="REINFORCE/plots/REINFORCE_LunarLander-v2_0.0005_1000.png" alt="drawing" width="400"/>
+  <img src="REINFORCE/plots/REINFORCE_LunarLander-v2_0.0005_3000.png" alt="drawing" width="400"/>
 </div>
+
+The following .gif file demonstrates the performance of the lunar lander over 3000 training steps:
+
+<div align="center">
+  <img src="REINFORCE/plots/REINFORCE_LunarLander-v2_0.0005_3000.gif" alt="drawing" width="400"/>
+</div>
+
+
+## Getting Started
+
+Ensure that you've installed all the packages listed in [requirements.txt](REINFORCE/requirements.txt) and execute [main.py](REINFORCE/main.py). The resulting figures will be saved in [plots](REINFORCE/plots/). Moreover, you can observe the lunar lander and its operations under the agent's control using `env.render()`. For a sample code, refer to [test.py](REINFORCE/test.py).
