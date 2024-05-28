@@ -50,8 +50,9 @@ if __name__ == "__main__":
                 step += 1
                 action = agent.act(state)
                 state_, reward, done, info, _ = env.step(action)
-                score += reward 
+                agent.memory.store(state, action, reward, state_, done)
                 agent.learn()
+                score += reward 
                 state = state_
                 if(step >= env_max_num_steps):
                     done = True

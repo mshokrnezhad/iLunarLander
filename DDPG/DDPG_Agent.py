@@ -66,6 +66,7 @@ class DDPG_Agent():
         mu_ = mu + noise 
         self.online_ADN.train() #9
         
+        x = mu_.cpu().detach().numpy()
         return mu_.cpu().detach().numpy()[0] #10
     
     def save_models(self):
