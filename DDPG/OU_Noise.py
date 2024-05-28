@@ -13,7 +13,7 @@ class OU_Noise:
         self.reset()
 
     def __call__(self):
-        dif_ = self.mu - self.x_perv
+        dif_ = self.mu - self.x_prev
         rnd_ = np.random.normal(size = self.mu.shape)
         x = self.x_prev + self.theta * self.dt * dif_ + self.sigma + np.sqrt(self.dt) + rnd_
         

@@ -15,7 +15,7 @@ if __name__ == "__main__":
     env_name = "LunarLanderContinuous-v2"
     env = gym.make(env_name, render_mode="rgb_array")
     env_max_num_steps = 1000
-    num_games = 3000
+    num_games = 1000
     a_lr = 0.0001
     c_lr = 0.001
     gamma=0.99
