@@ -25,6 +25,15 @@
 #       [0] extracts the first element from the NumPy array. Since mu_ was originally a tensor with an extra batch dimension (of size 1), 
 #       mu_.cpu().detach().numpy() results in a NumPy array with shape (1, actions_num). 
 #       The [0] indexing removes the batch dimension, resulting in an array of shape (actions_num,).
+#11:    Check the source paper and README.md to see the logic of self.learn().
+#12:    When target_q_ is computed, it might have a shape that includes an extra dimension, 
+#       making it a two-dimensional tensor with shape (batch_size, 1). 
+#       For some operations, it’s necessary to have this tensor as a one-dimensional tensor (a vector) with shape (batch_size,). 
+#       This ensures that arithmetic operations like addition with rewards and element-wise multiplication with self.gamma work correctly 
+#       and that the resulting tensor can be reshaped back to (batch_size, 1) without issues. For example, 
+#       target_q_ = tensor([[0.5], [0.8], [0.3], [1.2]]) afeter .view(-1) would be tensor([0.5, 0.8, 0.3, 1.2]).
+#13:    .clone() method is used to create a copy of a tensor. 
+#       This ensures that any subsequent operations on the cloned tensor do not affect the original tensor.
 
 import numpy as np
 import torch as T
@@ -38,6 +47,7 @@ class DDPG_Agent():
     def __init__(self, a_lr, c_lr, gamma, tau, input_size, fcl1_size, fcl2_size, actions_num, memory_size, batch_size, a_mf, c_mf):
         self.gamma = gamma
         self.batch_size = batch_size
+        self.tau = tau
         
         self.memory = Memory(memory_size, input_size, actions_num)
         self.noise = OU_Noise(mu = np.zeros(actions_num))
@@ -70,7 +80,7 @@ class DDPG_Agent():
         self.target_ADN.load_model()
         self.target_CDN.load_model()
         
-    def learn(self):
+    def learn(self): #11
         if self.memory.index < self.batch_size:
             return
         
@@ -82,11 +92,11 @@ class DDPG_Agent():
         dones = T.tensor(dones).to(self.online_ADN.device)
         
         target_V_ = self.target_ADN.forward(states_)
-        target_q_ = self.target_CDN.forward(states_, tV_)
+        target_q_ = self.target_CDN.forward(states_, target_V_)
         online_q = self.online_CDN.forward(states, actions)
         
         target_q_[dones] = 0.0
-        target_q_ = target_q_.view(-1)
+        target_q_ = target_q_.view(-1) #12
         
         target = rewards + self.gamma * target_q_
         target = target.view(self.batch_size, 1)
@@ -105,7 +115,27 @@ class DDPG_Agent():
         self.update_targets()       
         
         
-    def update_targets(self, t):
-        pass
+    def update_targets(self, tau = None):
+        if tau is None:
+            tau = self.tau
+        
+        online_ADN_params = self.online_ADN.named_parameters()
+        online_CDN_params = self.online_CDN.named_parameters()
+        target_ADN_params = self.target_ADN.named_parameters()
+        target_CDN_params = self.target_CDN.named_parameters()
+        
+        online_ADN_dict = dict(online_ADN_params)
+        online_CDN_dict = dict(online_CDN_params)
+        target_ADN_dict = dict(target_ADN_params)
+        target_CDN_dict = dict(target_CDN_params)
+        
+        for name in online_ADN_dict:
+            online_ADN_dict[name] = tau * online_ADN_dict[name].clone() + (1 - tau) * target_ADN_dict[name].clone() #13
+        
+        for name in online_CDN_dict:
+            online_CDN_dict[name] = tau * online_CDN_dict[name].clone() + (1 - tau) * target_CDN_dict[name].clone()
+        
+        self.target_ADN.load_state_dict(online_ADN_dict)
+        self.target_CDN.load_state_dict(online_CDN_dict)
     
     
