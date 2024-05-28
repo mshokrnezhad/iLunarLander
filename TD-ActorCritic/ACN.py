@@ -22,7 +22,7 @@ class ACN(nn.Module):
         self.fcl2 = nn.Linear(fcl1_size, fcl2_size)
         self.pi = nn.Linear(fcl2_size, actions_num)
         self.v = nn.Linear(fcl2_size, 1)
-        self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
+        self.optimizer = optim.Adam(self.parameters(), lr = learning_rate)
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
         self.to(self.device) #7 
         self.model_file = model_file

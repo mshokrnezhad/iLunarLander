@@ -21,7 +21,7 @@ class PGN(nn.Module):
         self.fcl1 = nn.Linear(*input_size, 128) #6 
         self.fcl2 = nn.Linear(128, 128)
         self.fcl3 = nn.Linear(128, actions_num)
-        self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
+        self.optimizer = optim.Adam(self.parameters(), lr = learning_rate)
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
         self.to(self.device) #7 
         self.model_file = model_file
