@@ -3,11 +3,11 @@
 import numpy as np
 
 class Memory():
-    def __init__(self, size, state_shape, actions_num):
+    def __init__(self, size, input_size, actions_num):
         self.size = size
         self.index = 0
-        self.state_store = np.zeros((size, *state_shape))
-        self.resulted_state_store = np.zeros((size, *state_shape))
+        self.state_store = np.zeros((size, *input_size))
+        self.resulted_state_store = np.zeros((size, *input_size))
         self.action_store = np.zeros((size, actions_num))
         self.reward_store = np.zeros(size)
         self.done_store = np.zeros(size, dtype=np.bool)

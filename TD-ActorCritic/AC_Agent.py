@@ -42,7 +42,7 @@ class AC_Agent():
         
         
     def act(self, state):
-        state = T.tensor([state]).to(self.ACN.device) #5
+        state = T.tensor([state], dtype=T.float).to(self.ACN.device) #5
         action_values, _ = self.ACN.forward(state) #6
         action_probabilities = F.softmax(action_values) #7
         actions_chances = T.distributions.Categorical(action_probabilities) #8
@@ -55,9 +55,9 @@ class AC_Agent():
     def learn(self, state, reward, state_, done): #10
         self.ACN.optimizer.zero_grad()
 
-        state = T.tensor([state], dtype=T.float32).to(self.ACN.device) #11
-        state_ = T.tensor([state_], dtype=T.float32).to(self.ACN.device) #11
-        reward = T.tensor([reward], dtype=T.float32).to(self.ACN.device) #11
+        state = T.tensor([state], dtype=T.float).to(self.ACN.device) #11
+        state_ = T.tensor([state_], dtype=T.float).to(self.ACN.device) #11
+        reward = T.tensor([reward], dtype=T.float).to(self.ACN.device) #11
         
         _, V = self.ACN.forward(state)
         _, V_ = self.ACN.forward(state_)

@@ -47,7 +47,7 @@ class PG_Agent():
         self.action_memory.append(action)
         
     def act(self, state):
-        state = T.tensor([state], dtype=T.float32).to(self.PGN.device) #5
+        state = T.tensor([state], dtype=T.float).to(self.PGN.device) #5
         action_values = self.PGN.forward(state) #6
         action_probabilities = F.softmax(action_values) #7
         actions_chances = T.distributions.Categorical(action_probabilities) #8
@@ -68,7 +68,7 @@ class PG_Agent():
                 G_t_ += self.reward_memory[k] * discount
                 discount *= self.gamma
             G_t[t_] = G_t_
-        G_t = T.tensor(G_t, dtype=T.float32).to(self.PGN.device) #13
+        G_t = T.tensor(G_t, dtype=T.float).to(self.PGN.device) #13
         
         loss = 0
         for g_t_, log_probability in zip(G_t, self.action_memory): #14
