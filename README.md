@@ -33,7 +33,7 @@ where $\mu(s)$ represents the probability of being in state $s$ according to our
 
 ## [REINFORCE](REINFORCE) 
 
-Now equipped with the policy gradient equation, we can devise a straightforward algorithm leveraging gradient ascent to adjust our policy parameters. While the theorem encompasses a summation over all states and actions, given the impracticality of computing gradients for all potential states and actions, we can rely on a sampled gradient. This method is known as REINFORCE (Monte-Carlo policy gradient), introduced by Sutton & Barto, which relies on estimated returns obtained through Monte-Carlo methods using episode samples. REINFORCE proves effective because the expectation of the sample gradient aligns with the actual gradient. In essence:
+Building on the policy gradient equation, we can devise a straightforward algorithm that utilizes gradient ascent to adjust our policy parameters. While the theoretical formulation involves summing over all states and actions, in practice, we estimate the gradient through sampling. This method is known as REINFORCE (Monte-Carlo policy gradient), introduced by Sutton & Barto. REINFORCE leverages estimated returns obtained via Monte-Carlo methods using episode samples, allowing us to compute an unbiased estimate of the policy gradient. This approach ensures that the expected value of the sampled gradient aligns with the true gradient, making it effective for learning optimal policies. In essence:
 
 $$\begin{eqnarray} 
 \nabla J(\theta) &=& \sum_{s \in \mathbf{\mathcal{S}}} \mu(s) \left ( \sum_{a \in \mathbf{\mathcal{A}}} Q^{\pi}(s, a) \nabla_{\theta} \pi_{\theta}(a|s) \right ) \nonumber \\
@@ -80,7 +80,7 @@ The following .gif file demonstrates the performance of the lunar lander over 30
 
 ## [TD-ActorCritic](TD-ActorCritic)
 
-In policy gradient methods, two main components are crucial: the policy distribution and the expected return. Learning the value function alongside the policy is beneficial, as it is expected to enhance the policy update process. This is the fundamental idea behind the Actor-Critic method. Actor-Critic methods involve two neural networks, which may optionally share parameters:
+In policy gradient methods, two main components are crucial: the policy distribution and the expected return (replaced by $G_t$ in REINFORCE). Learning the value function alongside the policy is beneficial, as it is expected to enhance the policy update process. This is the fundamental idea behind the Actor-Critic method. Actor-Critic methods involve two neural networks, which may optionally share parameters:
 
 - **Actor**: This component is responsible for selecting actions. It learns the policy $\pi_{\theta}(a|s)$ to maximize the expected return (which includes the reward and the weighted average expected value of future steps). This is done by adjusting $\theta$ in the direction that increases the likelihood of actions that result in higher returns.
 
@@ -127,6 +127,75 @@ The following .gif file demonstrates the performance of the lunar lander over 30
 <div align="center">
   <img src="TD-ActorCritic/plots/TD-ActorCritic_LunarLander-v2_5e-06_3000.gif" alt="drawing" width="400"/>
 </div>
+
+Certainly! Here’s the addition of the DDPG section to your README file, maintaining the style and format of your document:
+
+
+## [Deep Deterministic Policy Gradient (DDPG)](DDPG)
+
+The TD-ActorCritic method is effective in combining value-based and policy-based approaches for reinforcement learning, but it often struggles with stability and efficiency in continuous action spaces. DDPG enhances TD-ActorCritic by employing deep learning to stabilize and optimize both the actor and critic networks. This approach is particularly suited for environments with continuous action spaces, where it outperforms traditional methods by integrating strategies like experience replay and target networks. The main components of DDPG are as follows:
+
+- **Actor Network**: The actor network selects actions deterministically given the current state. It learns a policy function $\mu_{\theta}(s)$, which maps states to a specific action directly.
+  
+- **Critic Network**: The critic network evaluates the actions taken by the actor by learning the Q-value function $Q_{\omega}(s, a)$, which estimates the expected return for a given state-action pair.
+
+- **Experience Replay Buffer**: A memory buffer that stores tuples of state, action, reward, next state, and done signal. By sampling mini-batches of experiences from this buffer, the network updates are stabilized and decorrelated.
+
+- **Target Networks**: These are delayed copies of the actor and critic networks that are updated slowly to provide stable targets during learning.
+
+### Algorithm
+
+The DDPG algorithm can be outlined as follows:
+
+***
+1. Randomly initialize the actor network $\mu_{\theta}(s)$ and the critic network $Q_{\omega}(s, a)$ with weights $\theta$ and $\omega$ respectively.
+
+2. Initialize target networks $\theta'$ and $\omega'$ with weights $\theta' \leftarrow \theta$ and $\omega' \leftarrow \omega$.
+
+3. Initialize the replay buffer $\mathcal{R}$.
+
+4. Receive the initial state $S_0$.
+
+5. For $t = 1, 2, ..., T$:
+
+   - Initialize a random process $\mathcal{N}$ for action exploration.
+     
+   - Select action $A_t = \mu_{\theta}(S_t) + \mathcal{N}_t$ according to the current policy and exploration noise.
+     
+   - Execute action $A_t$ and observe reward $R_t$ and new state $S_{t+1}$.
+     
+   - Store transition $(S_t, A_t, R_t, S_{t+1})$ in the replay buffer $\mathcal{R}$.
+     
+   - Sample a random mini-batch of $N$ transitions from the replay buffer.
+   
+   - Compute target value $y_i = R_i + \gamma Q_{\omega'}(S_{i+1}, \mu_{\theta'}(S_{i+1}))$ for $0 \leq i \leq N$.
+     
+   - Update critic by minimizing the loss: $L = \frac{1}{N} \sum_i (y_i - Q_{\omega}(S_i, A_i))^2$.
+   
+   - Update the actor policy using the sampled policy gradient: $\nabla_{\theta} J \approx \frac{1}{N} \sum_i \nabla_a Q_{\omega}(s, a) \big|\_{s=S_i, a=\mu_{\theta}(S_i)} \nabla_{\theta} \mu_{\theta}(s) \big|_{S_i}$.
+   
+   - Update target networks: $\theta' \leftarrow \tau \theta + (1 - \tau) \theta'$ and $\omega' \leftarrow \tau \omega + (1 - \tau) \omega'$.
+***
+
+This process is implemented in [main.py](DDPG/main.py). The actor and critic networks, defined in [DDPG_Networks.py](DDPG/DDPG_Networks.py), leverage PyTorch for model building and optimization. The replay buffer and other utility functions are defined in [DDPG_Utils.py](DDPG/DDPG_Utils.py).
+
+### Outcomes
+
+The average scores (total rewards accumulated) of the lunar lander over 3000 training steps:
+
+<div align="center">
+  <img src="DDPG/plots/DDPG_LunarLander-v2_0.0001_3000.png" alt="drawing" width="400"/>
+</div>
+
+The following .gif file demonstrates the performance of the lunar lander over 3000 training steps:
+
+<div align="center">
+  <img src="DDPG/plots/DDPG_LunarLander-v2_0.0001_3000.gif" alt="drawing" width="400"/>
+</div>
+
+---
+
+By following the above structure, the DDPG section integrates seamlessly with the existing content, providing a clear and concise explanation of the method, its components, and the algorithm.
 
 ## Getting Started
 
