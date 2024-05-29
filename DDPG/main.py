@@ -12,7 +12,7 @@ from DDPG_Agent import DDPG_Agent
 from utils import save_frames_as_gif, plot_learning_curve
 
 if __name__ == "__main__":
-    env_name = "LunarLanderContinuous-v2"
+    env_name = "LunarLander-v2"
     env = gym.make(env_name, render_mode="rgb_array")
     num_games = 1000
     a_lr = 0.0001
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     input_size = env.observation_space.shape
     fcl1_size = 400
     fcl2_size = 300
-    actions_num = env.action_space.shape[0]
+    actions_num = 4
     memory_size = 1000000
     batch_size = 64
     file_name = "DDPG_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
@@ -47,7 +47,8 @@ if __name__ == "__main__":
             score = 0
             agent.noise.reset()
             while not (done or trunc):
-                action = agent.act(state)
+                action_mu_ = agent.act(state)
+                action = np.argmax(action_mu_) 
                 state_, reward, done, trunc, info = env.step(action)
                 terminal = done or trunc
                 agent.memory.store(state, action, reward, state_, terminal)
