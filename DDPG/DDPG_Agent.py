@@ -62,11 +62,10 @@ class DDPG_Agent():
         self.online_ADN.eval() #5
         state = T.tensor(state[np.newaxis, :], dtype = T.float, device = self.online_ADN.device) #6
         mu = self.online_ADN.forward(state).to(self.online_ADN.device) #7
-        noise = T.tensor(self.noise(), dtype=T.float).to(self.online_ADN.device) #8
-        mu_ = mu + noise 
+        mu = mu + T.tensor(self.noise(), dtype=T.float).to(self.online_ADN.device) #8
         self.online_ADN.train() #9
         
-        return mu_.cpu().detach().numpy()[0] #10
+        return mu.cpu().detach().numpy()[0] #10
     
     def save_models(self):
         self.online_ADN.save_model()

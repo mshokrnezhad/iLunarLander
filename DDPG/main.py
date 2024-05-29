@@ -12,7 +12,7 @@ from DDPG_Agent import DDPG_Agent
 from utils import save_frames_as_gif, plot_learning_curve
 
 if __name__ == "__main__":
-    env_name = "LunarLander-v2"
+    env_name = "LunarLanderContinuous-v2"
     env = gym.make(env_name, render_mode="rgb_array")
     num_games = 1000
     a_lr = 0.0001
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     input_size = env.observation_space.shape
     fcl1_size = 400
     fcl2_size = 300
-    actions_num = 4
+    actions_num = env.action_space.shape[0]
     memory_size = 1000000
     batch_size = 64
     file_name = "DDPG_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
@@ -45,10 +45,11 @@ if __name__ == "__main__":
             state, _ = env.reset()
             done, trunc = False, False
             score = 0
+            step = 0
             agent.noise.reset()
             while not (done or trunc):
-                action_mu_ = agent.act(state)
-                action = np.argmax(action_mu_) 
+                step += 1
+                action = agent.act(state)
                 state_, reward, done, trunc, info = env.step(action)
                 terminal = done or trunc
                 agent.memory.store(state, action, reward, state_, terminal)
@@ -58,7 +59,7 @@ if __name__ == "__main__":
             scores.append(score)
             
             avg_score = np.mean(scores[-100:])
-            print("game", t, "- score %.2f" %score, "- avg_score %.2f" %avg_score)
+            print("game", t, "steps", step, "- score %.2f" %score, "- avg_score %.2f" %avg_score)
             if avg_score > best_avg_score:
                 agent.save_models()
                 best_avg_score = avg_score
