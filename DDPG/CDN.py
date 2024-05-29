@@ -29,7 +29,7 @@ class CDN(nn.Module):
         self.bnl1 = nn.LayerNorm(fcl1_size) #7
         self.bnl2 = nn.LayerNorm(fcl2_size)
         self.al = nn.Linear(actions_num, fcl2_size)
-        self.q = nn.Linear(fcl2_size, 1)
+        self.Q = nn.Linear(fcl2_size, 1)
         
         f1 = 1./np.sqrt(self.fcl1.weight.data.size()[0]) #8
         self.fcl1.weight.data.uniform_(-f1, f1) #9
@@ -40,8 +40,8 @@ class CDN(nn.Module):
         self.fcl2.bias.data.uniform_(-f2, f2)
         
         f3 = 0.003
-        self.q.weight.data.uniform_(-f3, f3)
-        self.q.bias.data.uniform_(-f3, f3)
+        self.Q.weight.data.uniform_(-f3, f3)
+        self.Q.bias.data.uniform_(-f3, f3)
         
         f4 = 1./np.sqrt(self.al.weight.data.size()[0])
         self.al.weight.data.uniform_(-f4, f4)
@@ -60,9 +60,9 @@ class CDN(nn.Module):
         s = self.bnl2(s)
         a = self.al(action)
         s_a = F.relu(T.add(s, a))
-        s_a = self.q(s_a)
+        Q_s_a = self.Q(s_a)
         
-        return s_a
+        return Q_s_a
         
     def save_model(self):
         print(f'Saving {self.model_file}...')

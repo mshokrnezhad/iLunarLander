@@ -91,18 +91,18 @@ class DDPG_Agent():
         states_ = T.tensor(states_, dtype=T.float).to(self.online_ADN.device)
         dones = T.tensor(dones).to(self.online_ADN.device)
         
-        target_V_ = self.target_ADN.forward(states_)
-        target_q_ = self.target_CDN.forward(states_, target_V_)
-        online_q = self.online_CDN.forward(states, actions)
+        target_mu_ = self.target_ADN.forward(states_)
+        target_Q_ = self.target_CDN.forward(states_, target_mu_)
+        online_Q = self.online_CDN.forward(states, actions)
         
-        target_q_[dones] = 0.0
-        target_q_ = target_q_.view(-1) #12
+        target_Q_[dones] = 0.0
+        target_Q_ = target_Q_.view(-1) #12
         
-        target = rewards + self.gamma * target_q_
+        target = rewards + self.gamma * target_Q_
         target = target.view(self.batch_size, 1)
         
         self.online_CDN.optimizer.zero_grad()
-        critic_loss = F.mse_loss(target, online_q)
+        critic_loss = F.mse_loss(target, online_Q)
         critic_loss.backward()
         self.online_CDN.optimizer.step()
 

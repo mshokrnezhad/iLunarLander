@@ -1,3 +1,5 @@
+#1:     Note that you need to replace online_ADN with target_ADN in agent.act().
+
 import sys
 import os
 current_dir = os.path.dirname(__file__)
@@ -35,7 +37,7 @@ if __name__ == "__main__":
     ta_mf = str(current_dir) + "/models/Target_" + actor_file_name
     tc_mf = str(current_dir) + "/models/Target_" + critic_file_name
     agent = DDPG_Agent(a_lr, c_lr, gamma, tau, input_size, fcl1_size, fcl2_size, actions_num, memory_size, batch_size, oa_mf, oc_mf, ta_mf, tc_mf) 
-    mode = "train" # select among {"train", "test"}
+    mode = "test" # select among {"train", "test"}
     
     if(mode == "train"): 
         scores = []
@@ -70,20 +72,19 @@ if __name__ == "__main__":
         agent.load_models()
         
         frames = []
-        done = False
+        done, trunc = False, False
         score = 0
-        state = env.reset()[0]
+        state, _ = env.reset()
         step = 0
         agent.noise.reset()
-        while not done:
+        while not (done or trunc):
             step += 1
-            action = agent.act(state)
-            state_, reward, done, info, _ = env.step(action)
+            action = agent.act(state) #1
+            state_, reward, done, trunc, info = env.step(action)
+            terminal = done or trunc
             score += reward 
             state = state_
             frames.append(env.render())
-            if(step >= env_max_num_steps):
-                done = True
 
         print("score %.2f" %score)      
         save_frames_as_gif(frames, final_landing_file)            

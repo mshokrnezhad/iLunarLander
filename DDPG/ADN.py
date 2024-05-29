@@ -57,10 +57,10 @@ class ADN(nn.Module):
         x = self.fcl2(x)
         x = self.bnl2(x)
         x = F.relu(x)
-        x = self.mu(x)
-        x = T.tanh(x) #12
+        mu = self.mu(x)
+        mu = T.tanh(mu) #12
         
-        return x
+        return mu
         
     def save_model(self):
         print(f'Saving {self.model_file}...')
