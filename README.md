@@ -34,9 +34,9 @@ Each PG-based methodology involves the following steps:
    
    - We aim to find the optimal policy parameters $\theta$ by defining a performance measure $J(\theta)$ and using gradient ascent to maximize it.
      
-   - The policy gradient theorem provides a way to compute the gradient of $J(\theta)$ with respect to $\theta$, as described by Sutton & Barto in [this link](http://incompleteideas.net/book/bookdraft2017nov5.pdf) (also elaborated [here](https://lilianweng.github.io/posts/2018-04-08-policy-gradient/)). Assuming that $\mu(s)$ represents the probability of being in state $s$ according to our stochastic policy $\pi$, while $Q$ denotes an action-value function aligned with this policy, the policy gradient equation is:
+   - The policy gradient theorem provides a way to compute the gradient of $J(\theta)$ with respect to $\theta$, as described by Sutton & Barto in [this link](http://incompleteideas.net/book/bookdraft2017nov5.pdf) (also elaborated [here](https://lilianweng.github.io/posts/2018-04-08-policy-gradient/)). Assuming that $\mu$ represents the probability of being in state $s$ according to our stochastic policy $\pi$, while $Q$ denotes an action-value function aligned with this policy, the policy gradient equation is:
 
-     $$\nabla J(\theta) = \sum_{s \in \mathbf{\mathcal{S}}} \mu(s) \left ( \sum_{a \in \mathbf{\mathcal{A}}} Q^{\pi}(s, a) \nabla_{\theta} \pi_{\theta}(a|s) \right ),$$
+     $$\nabla J(\theta) = \sum_{s \in \mathbf{\mathcal{S}}} \mu^{\pi}(s) \left ( \sum_{a \in \mathbf{\mathcal{A}}} Q^{\pi}(s, a) \nabla_{\theta} \pi_{\theta}(a|s) \right ),$$
 
 The following algorithms attempt to solve this optimization problem using their own innovative approaches.
 
@@ -45,7 +45,7 @@ The following algorithms attempt to solve this optimization problem using their 
 Building on the policy gradient equation, we can devise a straightforward algorithm that utilizes gradient ascent to adjust our policy parameters. While the theoretical formulation involves summing over all states and actions, in practice, we estimate the gradient through sampling. This method is known as REINFORCE (Monte-Carlo policy gradient), introduced by Sutton & Barto. REINFORCE leverages estimated returns obtained via Monte-Carlo methods using episode samples, allowing us to compute an unbiased estimate of the policy gradient. This approach ensures that the expected value of the sampled gradient aligns with the true gradient, making it effective for learning optimal policies. In essence:
 
 $$\begin{eqnarray} 
-\nabla J(\theta) &=& \sum_{s \in \mathbf{\mathcal{S}}} \mu(s) \left ( \sum_{a \in \mathbf{\mathcal{A}}} Q^{\pi}(s, a) \nabla_{\theta} \pi_{\theta}(a|s) \right ) \nonumber \\
+\nabla J(\theta) &=& \sum_{s \in \mathbf{\mathcal{S}}} \mu^{\pi}(s) \left ( \sum_{a \in \mathbf{\mathcal{A}}} Q^{\pi}(s, a) \nabla_{\theta} \pi_{\theta}(a|s) \right ) \nonumber \\
 &=& \mathbb{E}\_{s \sim \pi} \left [ \sum_{a \in \mathbf{\mathcal{A}}} Q^{\pi}(S_{t}, a) \nabla_{\theta} \pi_{\theta}(a|S_{t}) \right ] \nonumber \\
 &=& \mathbb{E}\_{s \sim \pi} \left [ \sum_{a \in \mathbf{\mathcal{A}}} \pi_{\theta}(a|S_{t}) Q^{\pi}(S_{t}, a) \frac{\nabla_{\theta} \pi_{\theta}(a|S_{t})}{\pi_{\theta}(a|S_{t})} \right ] \nonumber \\
 &=& \mathbb{E}\_{s, a \sim \pi} \left [ Q^{\pi}(S_{t}, A_{t}) \frac{\nabla_{\theta} \pi_{\theta}(A_{t} | S_{t})}{\pi_{\theta}(A_{t} | S_{t})} \right ] \nonumber \\
@@ -89,15 +89,15 @@ The following .gif file demonstrates the performance of the lunar lander over 30
 
 ## [TD-ActorCritic](TD-ActorCritic)
 
-While the REINFORCE algorithm provides a straightforward method to optimize policies using Monte-Carlo samples, it can suffer from high variance and inefficiency in learning. To address these issues, the TD-ActorCritic method introduces a more refined approach by simultaneously learning the value function alongside the policy. This dual learning process helps stabilize and speed up training. In contrast to REINFORCE, which relies solely on sampled returns, TD-ActorCritic employs temporal difference (TD) learning to provide more immediate feedback. This results in more accurate and stable policy updates. This method involve two neural networks, which may optionally share parameters:
+While the REINFORCE algorithm provides a straightforward method to optimize policies using Monte-Carlo samples, it can suffer from high variance and inefficiency in learning. To address these issues, the TD-ActorCritic method introduces a more refined approach by simultaneously learning the value function alongside the policy. This dual learning process helps stabilize and speed up training. In contrast to REINFORCE, which relies solely on sampled returns, TD-ActorCritic employs Temporal Difference (TD) learning to provide more immediate feedback. This results in more accurate and stable policy updates. This method involve two neural networks, which may optionally share parameters:
 
 - **Actor**: This component is responsible for selecting actions. It learns the policy $\pi_{\theta}(a|s)$ to maximize the expected return (which includes the reward and the weighted average expected value of future steps). This is done by adjusting $\theta$ in the direction that increases the likelihood of actions that result in higher returns.
 
-- **Critic**: This component evaluates the actions taken by the actor by learning a value function. The value function can be either the state-value function, $\mathcal{V}\_{\omega}(s)$, which estimates the expected return (total accumulated reward) starting from state $s$, or the action-value function, $Q_{\omega}(s, a)$, which estimates the expected return starting from state $s$ and taking action $a$. The critic aims to improve the accuracy of these estimated values. Minimizing the Temporal Difference (TD) error is a promising approach for achieving this. The TD error is defined as follows:
+- **Critic**: This component evaluates the actions taken by the actor by learning a value function. The value function can be either the state-value function, $\mathcal{V}\_{\omega}(s)$, which estimates the expected return (total accumulated reward) starting from state $s$, or the action-value function, $Q_{\omega}(s, a)$, which estimates the expected return starting from state $s$ and taking action $a$. The critic aims to improve the accuracy of these estimated values. Minimizing the TD error is a promising approach for achieving this. The TD error is defined as follows:
 
-$$\delta_t = r_t + \gamma \mathcal{V}\_{\omega}(s_{t+1}) - \mathcal{V}\_{\omega}(s_{t})$$
+$$\delta_t = R_t + \gamma \mathcal{V}\_{\omega}(S_{t+1}) - \mathcal{V}\_{\omega}(S_{t})$$
   
-where $\mathcal{V}\_{\omega}(s_{t})$ is the value of the current state, $\mathcal{V}\_{\omega}(s_{t+1})$ is the value of the next state, $r_t$ is the reward received, and $\omega$ is the weight vector of the neural network learning the value function.
+where $\mathcal{V}\_{\omega}(S_{t})$ is the value of the current state, $\mathcal{V}\_{\omega}(S_{t+1})$ is the value of the next state, $R_t$ is the reward received, and $\omega$ is the weight vector of the neural network learning the value function.
 
 By incorporating both the actor and the critic, the Actor-Critic method effectively combines policy optimization with value calibration, leading to more efficient and robust learning.
 
@@ -137,12 +137,9 @@ The following .gif file demonstrates the performance of the lunar lander over 30
   <img src="TD-ActorCritic/plots/TD-ActorCritic_LunarLander-v2_5e-06_3000.gif" alt="drawing" width="400"/>
 </div>
 
-Certainly! Here’s the addition of the DDPG section to your README file, maintaining the style and format of your document:
-
-
 ## [DDPG](DDPG)
 
-The TD-ActorCritic method is effective in combining value-based and policy-based approaches for reinforcement learning, but it often struggles with stability and efficiency in continuous action spaces. Deep Deterministic Policy Gradient (DDPG) enhances TD-ActorCritic by employing deep learning to stabilize and optimize both the actor and critic networks. This approach is particularly suited for environments with continuous action spaces, where it outperforms traditional methods by integrating strategies like experience replay and target networks. The main components of DDPG are as follows:
+The TD-ActorCritic method is effective in combining value-based and policy-based approaches for reinforcement learning, but it often struggles with stability and efficiency in continuous action spaces. Deep Deterministic Policy Gradient (DDPG), as described by Lillicrap in [this link](https://arxiv.org/abs/1509.02971), enhances TD-ActorCritic by employing deep learning to stabilize and optimize both the actor and critic networks. This approach is particularly suited for environments with continuous action spaces, where it outperforms traditional methods by integrating strategies like experience replay and target networks. The main components of DDPG are as follows:
 
 - **Actor Network**: The actor network selects actions deterministically given the current state. It learns a policy function $\mu_{\theta}(s)$, which maps states to a specific action directly.
   
@@ -186,7 +183,8 @@ The DDPG algorithm can be outlined as follows:
    - Update target networks: $\theta' \leftarrow \tau \theta + (1 - \tau) \theta'$ and $\omega' \leftarrow \tau \omega + (1 - \tau) \omega'$.
 ***
 
-This process is implemented in [main.py](DDPG/main.py). The actor and critic networks, defined in [DDPG_Networks.py](DDPG/DDPG_Networks.py), leverage PyTorch for model building and optimization. The replay buffer and other utility functions are defined in [DDPG_Utils.py](DDPG/DDPG_Utils.py).
+This process is implemented in [main.py](DDPG/main.py). The actor and critic networks, defined in [ADN.py](DDPG/ADN.py) and [CDN.py](DDPG/CDN.py) 
+respectively, leverage PyTorch for model building and optimization. The replay buffer is defined in [Memory.py](DDPG/Memory.py), and the noise 
 
 ### Outcomes
 
