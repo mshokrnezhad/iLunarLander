@@ -14,7 +14,6 @@ from utils import save_frames_as_gif, plot_learning_curve
 if __name__ == "__main__":
     env_name = "LunarLanderContinuous-v2"
     env = gym.make(env_name, render_mode="rgb_array")
-    env_max_num_steps = 1000
     num_games = 1000
     a_lr = 0.0001
     c_lr = 0.001
@@ -43,25 +42,22 @@ if __name__ == "__main__":
         best_avg_score = -np.inf
         
         for t in range(num_games):
-            state = env.reset()
-            done = False
+            state, _ = env.reset()
+            done, trunc = False, False
             score = 0
-            step = 0
             agent.noise.reset()
-            while not done:
-                step += 1
+            while not (done or trunc):
                 action = agent.act(state)
-                state_, reward, done, info, _ = env.step(action)
-                agent.memory.store(state, action, reward, state_, done)
+                state_, reward, done, trunc, info = env.step(action)
+                terminal = done or trunc
+                agent.memory.store(state, action, reward, state_, terminal)
                 agent.learn()
                 score += reward 
                 state = state_
-                # if(step >= env_max_num_steps):
-                #     done = True
             scores.append(score)
             
             avg_score = np.mean(scores[-100:])
-            print("game", t, "steps", step, "- score %.2f" %score, "- avg_score %.2f" %avg_score)
+            print("game", t, "- score %.2f" %score, "- avg_score %.2f" %avg_score)
             if avg_score > best_avg_score:
                 agent.save_models()
                 best_avg_score = avg_score

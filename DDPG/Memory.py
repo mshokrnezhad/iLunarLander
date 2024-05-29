@@ -10,7 +10,7 @@ class Memory():
         self.resulted_state_store = np.zeros((size, *input_size))
         self.action_store = np.zeros((size, actions_num))
         self.reward_store = np.zeros(size)
-        self.done_store = np.zeros(size, dtype=np.bool_)
+        self.done_store = np.zeros(size, dtype=bool)
     
     def store(self, state, action, reward, state_, done):
         index_ = self.index % self.size

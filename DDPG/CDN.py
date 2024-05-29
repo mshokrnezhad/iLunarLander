@@ -48,7 +48,7 @@ class CDN(nn.Module):
         self.al.bias.data.uniform_(-f4, f4)
         
         self.optimizer = optim.Adam(self.parameters(), lr = learning_rate, weight_decay = 0.01)
-        self.device = T.device("cuda:0" if T.cuda.is_available() else "cuda:1")
+        self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
         self.to(self.device) #10
         self.model_file = model_file
         
