@@ -80,7 +80,7 @@ The following .gif file demonstrates the performance of the lunar lander over 30
 
 ## [TD-ActorCritic](TD-ActorCritic)
 
-In policy gradient methods, two main components are crucial: the policy distribution and the expected return (replaced by $G_t$ in REINFORCE). Learning the value function alongside the policy is beneficial, as it is expected to enhance the policy update process. This is the fundamental idea behind the Actor-Critic method. Actor-Critic methods involve two neural networks, which may optionally share parameters:
+While the REINFORCE algorithm provides a straightforward method to optimize policies using Monte-Carlo samples, it can suffer from high variance and inefficiency in learning. To address these issues, the TD-ActorCritic method introduces a more refined approach by simultaneously learning the value function alongside the policy. This dual learning process helps stabilize and speed up training. In contrast to REINFORCE, which relies solely on sampled returns, TD-ActorCritic employs temporal difference (TD) learning to provide more immediate feedback. This results in more accurate and stable policy updates. This method involve two neural networks, which may optionally share parameters:
 
 - **Actor**: This component is responsible for selecting actions. It learns the policy $\pi_{\theta}(a|s)$ to maximize the expected return (which includes the reward and the weighted average expected value of future steps). This is done by adjusting $\theta$ in the direction that increases the likelihood of actions that result in higher returns.
 
