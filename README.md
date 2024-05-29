@@ -188,21 +188,17 @@ respectively, leverage PyTorch for model building and optimization. All structur
 
 ### Outcomes
 
-The average scores (total rewards accumulated) of the lunar lander over 3000 training steps:
+The average scores (total rewards accumulated) of the lunar lander over 1000 training steps are illustrated below. Personally, I expected better outcomes, but DDPG exhibits highly variable performance from run to run. This fluctuations may be due to the parameters, which could be tuned for specific applications. For the lunar lander, we may need different parameters. Additionally, I believe that better action selection strategies, such as epsilon-greedy, could significantly improve performance.
 
 <div align="center">
   <img src="DDPG/plots/DDPG_LunarLander-v2_0.0001_3000.png" alt="drawing" width="400"/>
 </div>
 
-The following .gif file demonstrates the performance of the lunar lander over 3000 training steps:
+The following .gif file demonstrates the performance of the lunar lander over 1000 training steps:
 
 <div align="center">
   <img src="DDPG/plots/DDPG_LunarLander-v2_0.0001_3000.gif" alt="drawing" width="400"/>
 </div>
-
----
-
-By following the above structure, the DDPG section integrates seamlessly with the existing content, providing a clear and concise explanation of the method, its components, and the algorithm.
 
 ## Getting Started
 
