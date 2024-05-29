@@ -29,11 +29,13 @@ if __name__ == "__main__":
     file_name = "DDPG_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
     scores_plot_file = str(current_dir) + "/plots/" + file_name + ".png"
     final_landing_file = str(current_dir) + "/plots/" + file_name + ".gif"
-    actor_file_name = "DDPG_Actor_" + env_name + "_" + str(a_lr) + "_" + str(num_games)
-    critic_file_name = "DDPG_Critic_" + env_name + "_" + str(c_lr) + "_" + str(num_games)
-    a_mf = str(current_dir) + "/models/" + actor_file_name
-    c_mf = str(current_dir) + "/models/" + critic_file_name
-    agent = DDPG_Agent(a_lr, c_lr, gamma, tau, input_size, fcl1_size, fcl2_size, actions_num, memory_size, batch_size, a_mf, c_mf) 
+    actor_file_name = "Actor_DDPG_" + env_name + "_" + str(a_lr) + "_" + str(num_games)
+    critic_file_name = "Critic_DDPG_" + env_name + "_" + str(c_lr) + "_" + str(num_games)
+    oa_mf = str(current_dir) + "/models/Online_" + actor_file_name
+    oc_mf = str(current_dir) + "/models/Online_" + critic_file_name
+    ta_mf = str(current_dir) + "/models/Target_" + actor_file_name
+    tc_mf = str(current_dir) + "/models/Target_" + critic_file_name
+    agent = DDPG_Agent(a_lr, c_lr, gamma, tau, input_size, fcl1_size, fcl2_size, actions_num, memory_size, batch_size, oa_mf, oc_mf, ta_mf, tc_mf) 
     mode = "train" # select among {"train", "test"}
     
     if(mode == "train"): 
@@ -41,9 +43,9 @@ if __name__ == "__main__":
         best_avg_score = -np.inf
         
         for t in range(num_games):
+            state = env.reset()
             done = False
             score = 0
-            state = env.reset()[0]
             step = 0
             agent.noise.reset()
             while not done:
@@ -54,12 +56,12 @@ if __name__ == "__main__":
                 agent.learn()
                 score += reward 
                 state = state_
-                if(step >= env_max_num_steps):
-                    done = True
+                # if(step >= env_max_num_steps):
+                #     done = True
             scores.append(score)
             
             avg_score = np.mean(scores[-100:])
-            print("step", t, "- score %.2f" %score, "- avg_score %.2f" %avg_score)
+            print("game", t, "steps", step, "- score %.2f" %score, "- avg_score %.2f" %avg_score)
             if avg_score > best_avg_score:
                 agent.save_models()
                 best_avg_score = avg_score

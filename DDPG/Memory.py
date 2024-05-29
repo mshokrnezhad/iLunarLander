@@ -23,7 +23,7 @@ class Memory():
         self.index += 1
         
     def sample(self, batch_size):
-        size_ = max(self.size, self.index)
+        size_ = min(self.size, self.index)
         batch_ = np.random.choice(size_, batch_size)
         
         states = self.state_store[batch_]

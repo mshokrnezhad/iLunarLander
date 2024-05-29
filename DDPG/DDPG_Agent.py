@@ -44,19 +44,19 @@ from OU_Noise import OU_Noise
 from Memory import Memory
 
 class DDPG_Agent():
-    def __init__(self, a_lr, c_lr, gamma, tau, input_size, fcl1_size, fcl2_size, actions_num, memory_size, batch_size, a_mf, c_mf):
+    def __init__(self, a_lr, c_lr, gamma, tau, input_size, fcl1_size, fcl2_size, actions_num, memory_size, batch_size, oa_mf, oc_mf, ta_mf, tc_mf):
         self.gamma = gamma
         self.batch_size = batch_size
         self.tau = tau
         
         self.memory = Memory(memory_size, input_size, actions_num)
         self.noise = OU_Noise(mu = np.zeros(actions_num))
-        self.online_ADN = ADN(a_lr, input_size, fcl1_size, fcl2_size, actions_num, a_mf) #1
-        self.online_CDN = CDN(c_lr, input_size, fcl1_size, fcl2_size, actions_num, c_mf) #2
-        self.target_ADN = ADN(a_lr, input_size, fcl1_size, fcl2_size, actions_num, a_mf) #3
-        self.target_CDN = CDN(c_lr, input_size, fcl1_size, fcl2_size, actions_num, c_mf) #4
+        self.online_ADN = ADN(a_lr, input_size, fcl1_size, fcl2_size, actions_num, oa_mf) #1
+        self.online_CDN = CDN(c_lr, input_size, fcl1_size, fcl2_size, actions_num, oc_mf) #2
+        self.target_ADN = ADN(a_lr, input_size, fcl1_size, fcl2_size, actions_num, ta_mf) #3
+        self.target_CDN = CDN(c_lr, input_size, fcl1_size, fcl2_size, actions_num, tc_mf) #4
         
-        self.update_targets(1)
+        self.update_targets(tau = 1)
         
     def act(self, state):
         self.online_ADN.eval() #5
@@ -66,7 +66,6 @@ class DDPG_Agent():
         mu_ = mu + noise 
         self.online_ADN.train() #9
         
-        x = mu_.cpu().detach().numpy()
         return mu_.cpu().detach().numpy()[0] #10
     
     def save_models(self):
@@ -86,6 +85,7 @@ class DDPG_Agent():
             return
         
         states, actions, rewards, states_, dones = self.memory.sample(self.batch_size)
+        
         states = T.tensor(states, dtype=T.float).to(self.online_ADN.device)
         actions = T.tensor(actions, dtype=T.float).to(self.online_ADN.device)
         rewards = T.tensor(rewards, dtype=T.float).to(self.online_ADN.device)
