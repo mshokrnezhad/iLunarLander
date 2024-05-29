@@ -184,7 +184,7 @@ The DDPG algorithm can be outlined as follows:
 ***
 
 This process is implemented in [main.py](DDPG/main.py). The actor and critic networks, defined in [ADN.py](DDPG/ADN.py) and [CDN.py](DDPG/CDN.py) 
-respectively, leverage PyTorch for model building and optimization. The replay buffer is defined in [Memory.py](DDPG/Memory.py), and the noise 
+respectively, leverage PyTorch for model building and optimization. All structures and parameters are configured based on the source paper. The replay buffer is defined in [Memory.py](DDPG/Memory.py), and the noise function is introduced in [OU_Noise.py](DDPG/OU_Noise.py) based on the Ornstein–Uhlenbeck process (see [this link](https://en.wikipedia.org/wiki/Ornstein%E2%80%93Uhlenbeck_process#Mathematical_properties)).
 
 ### Outcomes
 
