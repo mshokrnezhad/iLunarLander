@@ -203,3 +203,7 @@ The following .gif file demonstrates the performance of the lunar lander over 10
 ## Getting Started
 
 Ensure that you've installed all the packages listed in [requirements.txt](REINFORCE/requirements.txt) and execute [main.py](REINFORCE/main.py). The resulting figures will be saved in [plots](REINFORCE/plots/). Moreover, you can observe the lunar lander and its operations under the agent's control using `env.render()`. For a sample code, refer to [test.py](REINFORCE/test.py).
+
+---
+
+Thank you for exploring PG with us! We hope you find this repository helpful and inspiring as you dive into the world of PG-based RL.
