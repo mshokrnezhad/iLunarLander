@@ -206,4 +206,6 @@ Ensure that you've installed all the packages listed in [requirements.txt](REINF
 
 ---
 
+## Thank You
+
 Thank you for exploring PG with us! We hope you find this repository helpful and inspiring as you dive into the world of PG-based RL.
