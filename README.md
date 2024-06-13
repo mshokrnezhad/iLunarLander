@@ -4,7 +4,7 @@
   <img src="iLunarLander.jpg" alt="drawing" width="400"/>
 </div>
 
-Training [LunarLander-v2 of GYM](https://gymnasium.farama.org/environments/box2d/lunar_lander/) to successfully land on the moon through the implementation of policy gradient algorithms! Enjoy the journey! 😄
+Training [LunarLander-v2 of GYM](https://gymnasium.farama.org/environments/box2d/lunar_lander/) to successfully land on the moon through the implementation of policy gradient algorithms! Enjoy the journey! <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Alien.png" alt="Alien" width="15" height="15" />
 
 ## Table of contents
 * [Policy Gradient](#policy-gradient)
@@ -172,9 +172,9 @@ The DDPG algorithm can be outlined as follows:
      
    - Store transition $(S_t, A_t, R_t, S_{t+1})$ in the replay buffer $\mathcal{R}$.
      
-   - Sample a random mini-batch of $N$ transitions from the replay buffer.
+   - Sample a random mini-batch of $N$ transitions from the replay buffer, where transition $i$ is $(S_i, A_i, R_i, S_i')$.
    
-   - Compute target value $y_i = R_i + \gamma Q_{\omega'}(S_{i+1}, \mu_{\theta'}(S_{i+1}))$ for $0 \leq i \leq N$.
+   - Compute target value $y_i = R_i + \gamma Q_{\omega'}(S_i', \mu_{\theta'}(S_i'))$ for $0 \leq i \leq N$.
      
    - Update critic by minimizing the loss: $L = \frac{1}{N} \sum_i (y_i - Q_{\omega}(S_i, A_i))^2$.
    
@@ -234,7 +234,7 @@ The TD3 algorithm can be outlined as follows:
      
    - Store transition $(S_t, A_t, R_t, S_{t+1})$ in the replay buffer $\mathcal{R}$.
      
-   - Sample a random mini-batch of $N$ transitions from the replay buffer, where transition i is $(S_i, A_i, R_i, S_i')$.
+   - Sample a random mini-batch of $N$ transitions from the replay buffer, where transition $i$ is $(S_i, A_i, R_i, S_i')$.
    
    - Compute target actions with added noise: $\tilde{A}\_i' = \mu_{\theta'}(S\_i') + \epsilon$, where $\epsilon \sim \text{clip}(\mathcal{N}(0, \sigma), -c, c)$.
    
