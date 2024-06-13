@@ -3,14 +3,14 @@
 import numpy as np
 
 class Memory():
-    def __init__(self, size, input_size, actions_num):
-        self.size = size
+    def __init__(self, memory_size, input_size, actions_num):
+        self.size = memory_size
         self.index = 0
-        self.state_store = np.zeros((size, *input_size))
-        self.resulted_state_store = np.zeros((size, *input_size))
-        self.action_store = np.zeros((size, actions_num))
-        self.reward_store = np.zeros(size)
-        self.done_store = np.zeros(size, dtype=bool)
+        self.state_store = np.zeros((memory_size, *input_size))
+        self.resulted_state_store = np.zeros((memory_size, *input_size))
+        self.action_store = np.zeros((memory_size, actions_num))
+        self.reward_store = np.zeros(memory_size)
+        self.done_store = np.zeros(memory_size, dtype=bool)
     
     def store(self, state, action, reward, state_, done):
         index_ = self.index % self.size
