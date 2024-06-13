@@ -71,10 +71,10 @@ class TD3_Agent():
         
         self.update_targets(tau = 1)
         
-    def act(self, state):
+    def act(self, state, mode = "train"):
         self.target_ADN.eval() #1
         
-        if(self.time < self.warmup_interval):
+        if(self.time < self.warmup_interval and mode == "train"):
             mu_ = T.tensor(np.random.normal(scale = self.noise, size = (self.actions_num, ))).to(self.target_ADN.device)
         else:
             state = T.tensor(state, dtype = T.float, device = self.target_ADN.device) #2
@@ -96,12 +96,12 @@ class TD3_Agent():
         self.target_CDN2.save_model()
         
     def load_models(self):
-        self.online_ADN.save_model()
-        self.online_CDN1.save_model()
-        self.online_CDN2.save_model()
-        self.target_ADN.save_model()
-        self.target_CDN1.save_model()
-        self.target_CDN2.save_model()
+        self.online_ADN.load_model()
+        self.online_CDN1.load_model()
+        self.online_CDN2.load_model()
+        self.target_ADN.load_model()
+        self.target_CDN1.load_model()
+        self.target_CDN2.load_model()
         
     def learn(self): #8
         if self.memory.index < self.batch_size:

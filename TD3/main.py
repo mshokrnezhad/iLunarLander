@@ -1,11 +1,9 @@
-#1:     Note that you need to replace online_ADN with target_ADN in agent.act().
-
 import sys
 import os
-#current_dir = os.path.dirname(__file__)
-#parent_dir = os.path.dirname(current_dir)
-current_dir = "/users/mshokrne/iLunarLander/TD3"
-parent_dir = "/users/mshokrne/iLunarLander"
+current_dir = os.path.dirname(__file__)
+parent_dir = os.path.dirname(current_dir)
+#current_dir = "/users/mshokrne/iLunarLander/TD3"
+#parent_dir = "/users/mshokrne/iLunarLander"
 sys.path.append(parent_dir)
 import gym 
 import matplotlib.pyplot as plt 
@@ -43,7 +41,7 @@ if __name__ == "__main__":
     update_interval = 2
     warmup_interval = 1000
     intervals = {'warmup_interval': warmup_interval, 'update_interval': update_interval}
-    file_name = "TD#_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
+    file_name = "TD3_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
     scores_plot_file = str(current_dir) + "/plots/" + file_name + ".png"
     final_landing_file = str(current_dir) + "/plots/" + file_name + ".gif"
     actor_file_name = "Actor_TD3_" + env_name + "_" + str(a_lr) + "_" + str(num_games)
@@ -57,7 +55,7 @@ if __name__ == "__main__":
     files = {'oa_mf': oa_mf, 'oc_mf1': oc_mf1, 'oc_mf2': oc_mf2, 'ta_mf': ta_mf, 'tc_mf1': tc_mf1, 'tc_mf2': tc_mf2}
     noise = 0.1
     agent = TD3_Agent(learning_rates, gamma, tau, sizes, files, intervals, noise)
-    mode = "train" # select among {"train", "test"}
+    mode = "test" # select among {"train", "test"}
     
     if(mode == "train"): 
         scores = []
@@ -95,10 +93,9 @@ if __name__ == "__main__":
         score = 0
         state, _ = env.reset()
         step = 0
-        agent.noise.reset()
         while not (done or trunc):
             step += 1
-            action = agent.act(state) #1
+            action = agent.act(state, mode = "test")
             state_, reward, done, trunc, info = env.step(action)
             terminal = done or trunc
             score += reward 
