@@ -200,6 +200,71 @@ The following .gif file demonstrates the performance of the lunar lander over 10
   <img src="DDPG/plots/DDPG_LunarLanderContinuous-v2_0.0001_0.001_1000.gif" alt="drawing" width="400"/>
 </div>
 
+## [TD3](TD3)
+
+While DDPG improves(?) upon TD-ActorCritic for environments with continuous action spaces, it can still suffer from overestimation bias and variance issues. Twin Delayed Deep Deterministic Policy Gradient (TD3), as described by Fujimoto in [this link](https://arxiv.org/abs/1802.09477), addresses these challenges by introducing three core improvements to stabilize training and enhance performance:
+
+1. **Clipped Double Q-Learning**:
+   - TD3 uses two critic networks to mitigate overestimation bias by taking the minimum value between them for the target Q-value. This approach helps in providing a more conservative estimate.
+
+2. **Delayed Policy Updates**:
+   - The actor network is updated less frequently than the critic networks. By updating the policy every two iterations (or more) of the critic update, TD3 reduces the variance of the policy updates.
+
+3. **Target Policy Smoothing**:
+   - Adding noise to the target policy action for each update helps in smoothing the target Q-value, which reduces variance and prevents the policy from exploiting value function errors.
+
+### Algorithm
+
+The TD3 algorithm can be outlined as follows:
+
+***
+1. Initialize the actor network $\mu_{\theta}(s)$ and two critic networks $Q_{\omega_1}(s, a)$ and $Q_{\omega_2}(s, a)$ with random weights $\theta$, $\omega_1$, and $\omega_2$ respectively.
+
+2. Initialize target networks $\theta'$, $\omega_1'$, and $\omega_2'$ with weights $\theta' \leftarrow \theta$, $\omega_1' \leftarrow \omega_1$, and $\omega\_2' \leftarrow \omega_2$.
+
+3. Initialize the replay buffer $\mathcal{R}$.
+
+4. Receive the initial state $S_0$.
+
+5. For $t = 1, 2, ..., T$:
+
+   - Select action $A_t = \mu_{\theta}(S_t) + \mathcal{N}_t$ according to the current policy and exploration noise.
+     
+   - Execute action $A_t$ and observe reward $R_t$ and new state $S_{t+1}$.
+     
+   - Store transition $(S_t, A_t, R_t, S_{t+1})$ in the replay buffer $\mathcal{R}$.
+     
+   - Sample a random mini-batch of $N$ transitions from the replay buffer, where transition i is $(S_i, A_i, R_i, S_i')$.
+   
+   - Compute target actions with added noise: $\tilde{A}\_i' = \mu_{\theta'}(S\_i') + \epsilon$, where $\epsilon \sim \text{clip}(\mathcal{N}(0, \sigma), -c, c)$.
+   
+   - Compute target value $y_i = R_i + \gamma \min(Q_{\omega_1'}(S\_i', \tilde{A}\_i'), Q_{\omega_2'}(S\_i', \tilde{A}\_i'))$ for $0 \leq i \leq N$.
+     
+   - Update critics by minimizing the loss: $L_{\omega_1} = \frac{1}{N} \sum_i (y_i - Q_{\omega_1}(S_i, A_i))^2$ and $L_{\omega_2} = \frac{1}{N} \sum_i (y_i - Q_{\omega_2}(S_i, A_i))^2$.
+   
+   - If $t \bmod d$ == 0 (delayed policy update):
+
+     - Update the actor policy using the sampled policy gradient: $\nabla_{\theta} J \approx \frac{1}{N} \sum_i \nabla_a Q_{\omega_1}(s, a) \big|\_{s=S_i, a=\mu_{\theta}(S_i)} \nabla_{\theta} \mu_{\theta}(s) \big|_{S_i}$.
+     
+     - Update target networks: $\theta' \leftarrow \tau \theta + (1 - \tau) \theta'$ and $\omega_1' \leftarrow \tau \omega_1 + (1 - \tau) \omega_1'$, $\omega_2' \leftarrow \tau \omega_2 + (1 - \tau) \omega_2'$.
+***
+
+This process is implemented in [main.py](TD3/main.py). The actor and critic networks, defined in [ADN.py](TD3/ADN.py) and [CDN.py](TD3/CDN.py) respectively, leverage PyTorch for model building and optimization. All structures and parameters are configured based on the source paper. The replay buffer is defined in [Memory.py](TD3/Memory.py), and the agent is introduced in [TD3_Agent.py](TD3/TD3_Agent.py).
+
+### Outcomes
+
+The average scores (total rewards accumulated) of the lunar lander over 1000 training steps are illustrated below. TD3 shows a more stable and reliable performance compared to DDPG, although fine-tuning parameters for specific applications can still lead to significant improvements.
+
+<div align="center">
+  <img src="TD3/plots/TD3_LunarLanderContinuous-v2_0.001_0.001_1000.png" alt="drawing" width="400"/>
+</div>
+
+The following .gif file demonstrates the performance of the lunar lander over 1000 training steps:
+
+<div align="center">
+  <img src="TD3/plots/TD3_LunarLanderContinuous-v2_0.001_0.001_1000.gif" alt="drawing" width="400"/>
+</div>
+
 ## Getting Started
 
 Ensure that you've installed all the packages listed in [requirements.txt](REINFORCE/requirements.txt) and execute [main.py](REINFORCE/main.py). The resulting figures will be saved in [plots](REINFORCE/plots/). Moreover, you can observe the lunar lander and its operations under the agent's control using `env.render()`. For a sample code, refer to [test.py](REINFORCE/test.py).
