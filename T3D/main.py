@@ -19,7 +19,7 @@ if __name__ == "__main__":
     num_games = 1000
     a_lr = 0.001
     c_lr = 0.001
-    learning_rates = {a_lr, c_lr}
+    learning_rates = {'a_lr': a_lr, 'c_lr': c_lr}
     gamma=0.99
     tau = 0.005
     action_max = env.action_space.high
@@ -30,10 +30,19 @@ if __name__ == "__main__":
     actions_num = env.action_space.shape[0]
     memory_size = 1000000
     batch_size = 100
-    sizes = {action_max, action_min, memory_size, input_size, fcl1_size, fcl2_size, actions_num, batch_size}
+    sizes = {
+        'action_max': action_max, 
+        'action_min': action_min, 
+        'memory_size': memory_size, 
+        'input_size': input_size, 
+        'fcl1_size': fcl1_size, 
+        'fcl2_size': fcl2_size, 
+        'actions_num': actions_num, 
+        'batch_size': batch_size
+    }
     update_interval = 2
     warmup_interval = 1000
-    intervals = {warmup_interval, update_interval}
+    intervals = {'warmup_interval': warmup_interval, 'update_interval': update_interval}
     file_name = "DDPG_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
     scores_plot_file = str(current_dir) + "/plots/" + file_name + ".png"
     final_landing_file = str(current_dir) + "/plots/" + file_name + ".gif"
@@ -45,7 +54,7 @@ if __name__ == "__main__":
     ta_mf = str(current_dir) + "/models/Target_" + actor_file_name
     tc_mf1 = str(current_dir) + "/models/Target_1" + critic_file_name
     tc_mf2 = str(current_dir) + "/models/Target_2" + critic_file_name
-    files = {oa_mf, oc_mf1, oc_mf2, ta_mf, tc_mf1, tc_mf2}
+    files = {'oa_mf': oa_mf, 'oc_mf1': oc_mf1, 'oc_mf2': oc_mf2, 'ta_mf': ta_mf, 'tc_mf1': tc_mf1, 'tc_mf2': tc_mf2}
     noise = 0.1
     agent = T3D_Agent(learning_rates, gamma, tau, sizes, files, intervals, noise)
     mode = "train" # select among {"train", "test"}

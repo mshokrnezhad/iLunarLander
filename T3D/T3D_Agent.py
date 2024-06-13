@@ -116,7 +116,7 @@ class T3D_Agent():
         dones = T.tensor(dones).to(self.online_ADN.device)
         
         target_mu_ = self.target_ADN.forward(states_)
-        target_mu_ = target_mu_ + T.clamp(np.random.normal(scale = 0.2), min = -0.5, max = 0.5)
+        target_mu_ = target_mu_ + T.clamp(T.tensor(np.random.normal(scale = 0.2)), min = -0.5, max = 0.5)
         target_mu_ = T.clamp(target_mu_, self.action_min[0], self.action_max[0])
         
         target_Q1_ = self.target_CDN1.forward(states_, target_mu_)
@@ -127,7 +127,7 @@ class T3D_Agent():
         target_Q1_[dones] = 0.0
         target_Q2_[dones] = 0.0
         target_Q1_ = target_Q1_.view(-1) #9
-        target_Q1_ = target_Q1_.view(-1)
+        target_Q2_ = target_Q2_.view(-1)
         
         target_Q_ = T.min(target_Q1_, target_Q2_)
     
