@@ -32,6 +32,7 @@ class ADN(nn.Module):
         self.model_file = model_file
         
     def forward(self, state): #8
+        state = state.to(self.device)
         s = self.fcl1(state)
         s = F.relu(s)
         s = self.fcl2(s)

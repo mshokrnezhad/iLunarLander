@@ -2,10 +2,10 @@
 
 import sys
 import os
-current_dir = os.path.dirname(__file__)
-parent_dir = os.path.dirname(current_dir)
-#current_dir = "/users/mshokrne/iLunarLander/T3D"
-#parent_dir = "/users/mshokrne/iLunarLander"
+#current_dir = os.path.dirname(__file__)
+#parent_dir = os.path.dirname(current_dir)
+current_dir = "/users/mshokrne/iLunarLander/T3D"
+parent_dir = "/users/mshokrne/iLunarLander"
 sys.path.append(parent_dir)
 import gym 
 import matplotlib.pyplot as plt 
@@ -43,11 +43,11 @@ if __name__ == "__main__":
     update_interval = 2
     warmup_interval = 1000
     intervals = {'warmup_interval': warmup_interval, 'update_interval': update_interval}
-    file_name = "DDPG_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
+    file_name = "T3D_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
     scores_plot_file = str(current_dir) + "/plots/" + file_name + ".png"
     final_landing_file = str(current_dir) + "/plots/" + file_name + ".gif"
-    actor_file_name = "Actor_DDPG_" + env_name + "_" + str(a_lr) + "_" + str(num_games)
-    critic_file_name = "Critic_DDPG_" + env_name + "_" + str(c_lr) + "_" + str(num_games)
+    actor_file_name = "Actor_T3D_" + env_name + "_" + str(a_lr) + "_" + str(num_games)
+    critic_file_name = "Critic_T3D_" + env_name + "_" + str(c_lr) + "_" + str(num_games)
     oa_mf = str(current_dir) + "/models/Online_" + actor_file_name
     oc_mf1 = str(current_dir) + "/models/Online_1" + critic_file_name
     oc_mf2 = str(current_dir) + "/models/Online_2" + critic_file_name

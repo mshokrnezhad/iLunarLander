@@ -31,6 +31,8 @@ class CDN(nn.Module):
         self.model_file = model_file
         
     def forward(self, state, action): #8
+        state = state.to(self.device)
+        action = action.to(self.device)
         action_value = self.fcl1(T.cat([state, action], dim = 1)) #9
         action_value = F.relu(action_value)
         action_value = self.fcl2(action_value)

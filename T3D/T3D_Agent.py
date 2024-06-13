@@ -1,11 +1,11 @@
 #       In this file, we implement an T3D-based agent which is working based on ADN and CDN.
-#1:     self.online_ADN.eval() (activating the evaluation mode of the system) might not have a significant impact on the results.
+#1:     ADN.eval() (activating the evaluation mode of the system) might not have a significant impact on the results.
 #       However, to ensure consistency, reproducibility, and to follow best practices, it’s important to set the network to evaluation mode during inference. 
 #       This practice is especially crucial if the network might include other types of layers in the future.
 #2:     To send the state in the form of Tensor to the device selected in ADN.
 #3:     It dose not explicitly need to send mu_ to the device because mu_ is already on the correct device. 
-#       This is because mu_ is obtained as the output of self.online_ADN.forward(state), 
-#       and since state was moved to the same device as the model (self.online_ADN.device), the output mu_ will also be on that device.
+#       This is because mu_ is obtained as the output of ADN.forward(state), 
+#       and since state was moved to the same device as the model (ADN.device), the output mu_ will also be on that device.
 #4:     By moving noise to the same device as mu_, you ensure the addition operation works correctly.
 #5:     T.clamp: This function clamps all elements in the input tensor mu into the range [min, max]. Any values in mu less than min are set to min, 
 #       and any values greater than max are set to max.
@@ -72,18 +72,18 @@ class T3D_Agent():
         self.update_targets(tau = 1)
         
     def act(self, state):
-        self.online_ADN.eval() #1
+        self.target_ADN.eval() #1
         
         if(self.time < self.warmup_interval):
             mu_ = T.tensor(np.random.normal(scale = self.noise, size = (self.actions_num, )))
         else:
-            state = T.tensor(state, dtype = T.float, device = self.online_ADN.device) #2
-            mu_ = self.online_ADN.forward(state).to(self.online_ADN.device) #3
-        mu = mu_ + T.tensor(np.random.normal(scale = self.noise), dtype=T.float).to(self.online_ADN.device) #4
+            state = T.tensor(state, dtype = T.float, device = self.target_ADN.device) #2
+            mu_ = self.target_ADN.forward(state).to(self.target_ADN.device) #3
+        mu = mu_ + T.tensor(np.random.normal(scale = self.noise), dtype=T.float).to(mu_.device) #4
         mu = T.clamp(mu, self.action_max[0], self.action_min[0]) #5
         
         self.time += 1
-        self.online_ADN.train() #6
+        self.target_ADN.train() #6
         
         return mu.cpu().detach().numpy() #7
     
