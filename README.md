@@ -1,7 +1,7 @@
 # iLunarLander
 
 <div align="center">
-  <img src="iLunarLander2.jpg" alt="drawing" width="400"/>
+  <img src="iLunarLander2.jpg" alt="drawing" width="600"/>
 </div>
 
 Training [LunarLander-v2 of GYM](https://gymnasium.farama.org/environments/box2d/lunar_lander/) to successfully land on the moon through the implementation of policy gradient algorithms! Enjoy the journey! <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Alien.png" alt="Alien" width="15" height="15" />
