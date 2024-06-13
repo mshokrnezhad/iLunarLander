@@ -75,12 +75,12 @@ class T3D_Agent():
         self.target_ADN.eval() #1
         
         if(self.time < self.warmup_interval):
-            mu_ = T.tensor(np.random.normal(scale = self.noise, size = (self.actions_num, )))
+            mu_ = T.tensor(np.random.normal(scale = self.noise, size = (self.actions_num, ))).to(self.target_ADN.device)
         else:
             state = T.tensor(state, dtype = T.float, device = self.target_ADN.device) #2
             mu_ = self.target_ADN.forward(state).to(self.target_ADN.device) #3
         mu = mu_ + T.tensor(np.random.normal(scale = self.noise), dtype=T.float).to(mu_.device) #4
-        mu = T.clamp(mu, self.action_max[0], self.action_min[0]) #5
+        mu = T.clamp(mu, min = self.action_min[0], max = self.action_max[0]) #5
         
         self.time += 1
         self.target_ADN.train() #6
