@@ -1,4 +1,4 @@
-#       In this file, we implement an T3D-based agent which is working based on ADN and CDN.
+#       In this file, we implement an TD3-based agent which is working based on ADN and CDN.
 #1:     ADN.eval() (activating the evaluation mode of the system) might not have a significant impact on the results.
 #       However, to ensure consistency, reproducibility, and to follow best practices, it’s important to set the network to evaluation mode during inference. 
 #       This practice is especially crucial if the network might include other types of layers in the future.
@@ -35,7 +35,7 @@ from ADN import ADN
 from CDN import CDN
 from Memory import Memory
 
-class T3D_Agent():
+class TD3_Agent():
     def __init__(self, learning_rates, gamma, tau, sizes, files, intervals, noise):
         self.a_lr = learning_rates["a_lr"]
         self.c_lr = learning_rates["c_lr"]

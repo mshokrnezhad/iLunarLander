@@ -4,13 +4,13 @@ import sys
 import os
 #current_dir = os.path.dirname(__file__)
 #parent_dir = os.path.dirname(current_dir)
-current_dir = "/users/mshokrne/iLunarLander/T3D"
+current_dir = "/users/mshokrne/iLunarLander/TD3"
 parent_dir = "/users/mshokrne/iLunarLander"
 sys.path.append(parent_dir)
 import gym 
 import matplotlib.pyplot as plt 
 import numpy as np
-from T3D_Agent import T3D_Agent
+from TD3_Agent import TD3_Agent
 from utils import save_frames_as_gif, plot_learning_curve
 
 if __name__ == "__main__":
@@ -43,20 +43,20 @@ if __name__ == "__main__":
     update_interval = 2
     warmup_interval = 1000
     intervals = {'warmup_interval': warmup_interval, 'update_interval': update_interval}
-    file_name = "T3D_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
+    file_name = "TD#_" + env_name + "_" + str(a_lr) + "_" + str(c_lr) + "_" + str(num_games)
     scores_plot_file = str(current_dir) + "/plots/" + file_name + ".png"
     final_landing_file = str(current_dir) + "/plots/" + file_name + ".gif"
-    actor_file_name = "Actor_T3D_" + env_name + "_" + str(a_lr) + "_" + str(num_games)
-    critic_file_name = "Critic_T3D_" + env_name + "_" + str(c_lr) + "_" + str(num_games)
+    actor_file_name = "Actor_TD3_" + env_name + "_" + str(a_lr) + "_" + str(num_games)
+    critic_file_name = "Critic_TD3_" + env_name + "_" + str(c_lr) + "_" + str(num_games)
     oa_mf = str(current_dir) + "/models/Online_" + actor_file_name
-    oc_mf1 = str(current_dir) + "/models/Online_1" + critic_file_name
-    oc_mf2 = str(current_dir) + "/models/Online_2" + critic_file_name
+    oc_mf1 = str(current_dir) + "/models/Online1_" + critic_file_name
+    oc_mf2 = str(current_dir) + "/models/Online2_" + critic_file_name
     ta_mf = str(current_dir) + "/models/Target_" + actor_file_name
-    tc_mf1 = str(current_dir) + "/models/Target_1" + critic_file_name
-    tc_mf2 = str(current_dir) + "/models/Target_2" + critic_file_name
+    tc_mf1 = str(current_dir) + "/models/Target1_" + critic_file_name
+    tc_mf2 = str(current_dir) + "/models/Target2_" + critic_file_name
     files = {'oa_mf': oa_mf, 'oc_mf1': oc_mf1, 'oc_mf2': oc_mf2, 'ta_mf': ta_mf, 'tc_mf1': tc_mf1, 'tc_mf2': tc_mf2}
     noise = 0.1
-    agent = T3D_Agent(learning_rates, gamma, tau, sizes, files, intervals, noise)
+    agent = TD3_Agent(learning_rates, gamma, tau, sizes, files, intervals, noise)
     mode = "train" # select among {"train", "test"}
     
     if(mode == "train"): 
