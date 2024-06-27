@@ -5,6 +5,13 @@
 #2:     To send the state in the form of Tensor to the device selected in ADN.
 #3:     .clone() method is used to create a copy of a tensor. 
 #       This ensures that any subsequent operations on the cloned tensor do not affect the original tensor.
+#4:     Check the source paper and README.md to see the logic of self.learn().
+#5:     When online_v is computed, it might have a shape that includes an extra dimension, 
+#       making it a two-dimensional tensor with shape (batch_size, 1). 
+#       For some operations, it’s necessary to have this tensor as a one-dimensional tensor (a vector) with shape (batch_size,). 
+#       This ensures that arithmetic operations like addition with rewards and element-wise multiplication with self.gamma work correctly 
+#       and that the resulting tensor can be reshaped back to (batch_size, 1) without issues. For example, 
+#       online_v = tensor([[0.5], [0.8], [0.3], [1.2]]) afeter .view(-1) would be tensor([0.5, 0.8, 0.3, 1.2]).
 
 import numpy as np
 import torch as T
@@ -81,9 +88,64 @@ class SAC_Agent():
             online_VDN_dict[name] = tau * online_VDN_dict[name].clone() + (1 - tau) * online_VDN_dict[name].clone() #3
         
         self.target_VDN.load_state_dict(online_VDN_dict)
-
-    
         
+    def learn(self): #4
+        if self.memory.index < self.batch_size:
+            return
+        
+        states, actions, rewards, states_, dones = self.memory.sample(self.batch_size)
+        
+        states = T.tensor(states, dtype=T.float).to(self.ADN.device)
+        actions = T.tensor(actions, dtype=T.float).to(self.ADN.device)
+        rewards = T.tensor(rewards, dtype=T.float).to(self.ADN.device)
+        states_ = T.tensor(states_, dtype=T.float).to(self.ADN.device)
+        dones = T.tensor(dones).to(self.ADN.device)
+        
+        online_v = self.online_VDN.forward(states)
+        online_v = online_v.view(-1) #5
+        target_v_ = self.target_VDN.forward(states_)
+        target_v_ = target_v_.view(-1)
+        target_v_[dones] = 0.0
+        
+        actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled = False)
+        log_probabilities = log_probabilities.view(-1)
+        Q1 = self.CDN1.forward(states, actions)
+        Q2 = self.CDN2.forward(states, actions)
+        Q = T.min(Q1, Q2)
+        Q = Q.view(-1)
+        v_target = Q - log_probabilities
+        v_loss = 0.5 * F.mse_loss(online_v, v_target)
+        self.online_VDN.optimizer.zero_grad()
+        v_loss.backward(retain_graph = True)
+        self.online_VDN.optimizer.step()
+        
+        actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled = True)
+        log_probabilities = log_probabilities.view(-1)
+        Q1 = self.CDN1.forward(states, actions)
+        Q2 = self.CDN2.forward(states, actions)
+        Q = T.min(Q1, Q2)
+        Q = Q.view(-1)
+        actor_loss = log_probabilities - Q
+        actor_loss = T.mean(actor_loss)
+        self.ADN.optimizer.zero_grad()
+        actor_loss.backward(retain_graph = True)
+        self.ADN.optimizer.step()
+        
+        Q_ = self.reward_scaler * rewards + self.gamma * target_v_
+        Q1 = self.CDN1.forward(states, actions)
+        Q1 = Q1.view(-1)
+        Q2 = self.CDN2.forward(states, actions)
+        Q2 = Q2.view(-1)
+        critic1_loss = 0.5 * F.mse_loss(Q1, Q_)
+        critic2_loss = 0.5 * F.mse_loss(Q2, Q_)
+        critic_loss = critic1_loss + critic2_loss
+        self.CDN1.optimizer.zero_grad()
+        self.CDN2.optimizer.zero_grad()
+        critic_loss.backward()
+        self.CDN1.optimizer.step()
+        self.CDN2.optimizer.step()
+        
+        self.update_targets()
         
         
         
