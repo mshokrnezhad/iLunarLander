@@ -1,3 +1,9 @@
+#       In this file, we implement an SAC-based agent which is working based on ADN, CDN, and VDN.
+#1:     ADN.eval() (activating the evaluation mode of the system) might not have a significant impact on the results.
+#       However, to ensure consistency, reproducibility, and to follow best practices, it’s important to set the network to evaluation mode during inference. 
+#       This practice is especially crucial if the network might include other types of layers in the future.
+#2:     To send the state in the form of Tensor to the device selected in ADN.
+
 import numpy as np
 import torch as T
 import torch.nn.functional as F
@@ -34,3 +40,30 @@ class SAC_Agent():
         self.target_VDN = VDN(self.c_lr, self.input_size, self.fcl1_size, self.fcl2_size, self.tv_mf) 
         
         self.update_targets(tau = 1)
+
+    def act(self, state, mode = "train"):
+        self.ADN.eval() #1
+        
+        state = T.tensor(state, dtype = T.float, device = self.ADN.device) #2
+        actions = self.ADN.sample_action(state, isReparamEnabled = False)
+        
+        self.ADN.train()
+        
+        return actions.cpu().detach().numpy()[0]
+    
+    def save_models(self):
+        self.ADN.save_model()
+        self.CDN1.save_model()
+        self.CDN2.save_model()
+        self.online_VDN.save_model()
+        self.target_VDN.save_model()
+        
+    def load_models(self):
+        self.ADN.load_model()
+        self.CDN1.load_model()
+        self.CDN2.load_model()
+        self.online_VDN.load_model()
+        self.target_VDN.load_model()
+        
+        
+        
