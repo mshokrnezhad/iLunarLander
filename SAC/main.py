@@ -53,3 +53,51 @@ if __name__ == "__main__":
     files = {'a_mf': a_mf, 'c_mf1': c_mf1, 'c_mf2': c_mf2, 'ov_mf': ov_mf, 'tv_mf': tv_mf}
     agent = SAC_Agent(learning_rates, gamma, tau, sizes, files, reward_scaler)
     mode = "train" # select among {"train", "test"}
+    
+    if(mode == "train"): 
+        scores = []
+        best_avg_score = -np.inf
+        
+        for t in range(num_games):
+            state, _ = env.reset()
+            done, trunc = False, False
+            score = 0
+            step = 0
+            while not (done or trunc):
+                step += 1
+                action = agent.act(state)
+                state_, reward, done, trunc, info = env.step(action)
+                terminal = done or trunc
+                agent.memory.store(state, action, reward, state_, terminal)
+                agent.learn()
+                score += reward 
+                state = state_
+            scores.append(score)
+            
+            avg_score = np.mean(scores[-100:])
+            print("game", t, "steps", step, "- score %.2f" %score, "- avg_score %.2f" %avg_score)
+            if avg_score > best_avg_score:
+                agent.save_models()
+                best_avg_score = avg_score
+
+        plot_learning_curve(scores, scores_plot_file)
+    
+    if(mode == "test"):
+        agent.load_models()
+        
+        frames = []
+        done, trunc = False, False
+        score = 0
+        state, _ = env.reset()
+        step = 0
+        while not (done or trunc):
+            step += 1
+            action = agent.act(state, mode = "test")
+            state_, reward, done, trunc, info = env.step(action)
+            terminal = done or trunc
+            score += reward 
+            state = state_
+            frames.append(env.render())
+
+        print("score %.2f" %score)      
+        save_frames_as_gif(frames, final_landing_file)  
