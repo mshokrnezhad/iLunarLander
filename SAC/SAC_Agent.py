@@ -3,6 +3,8 @@
 #       However, to ensure consistency, reproducibility, and to follow best practices, it’s important to set the network to evaluation mode during inference. 
 #       This practice is especially crucial if the network might include other types of layers in the future.
 #2:     To send the state in the form of Tensor to the device selected in ADN.
+#3:     .clone() method is used to create a copy of a tensor. 
+#       This ensures that any subsequent operations on the cloned tensor do not affect the original tensor.
 
 import numpy as np
 import torch as T
@@ -44,7 +46,7 @@ class SAC_Agent():
     def act(self, state, mode = "train"):
         self.ADN.eval() #1
         
-        state = T.tensor(state, dtype = T.float, device = self.ADN.device) #2
+        state = T.tensor([state], dtype = T.float, device = self.ADN.device) #2
         actions = self.ADN.sample_action(state, isReparamEnabled = False)
         
         self.ADN.train()
@@ -64,6 +66,24 @@ class SAC_Agent():
         self.CDN2.load_model()
         self.online_VDN.load_model()
         self.target_VDN.load_model()
+        
+    def update_targets(self, tau = None):
+        if tau is None:
+            tau = self.tau
+        
+        online_VDN_params = self.online_VDN.named_parameters()
+        target_VDN_params = self.target_VDN.named_parameters()
+        
+        online_VDN_dict = dict(online_VDN_params)
+        target_VDN_dict = dict(target_VDN_params)
+        
+        for name in online_VDN_dict:
+            online_VDN_dict[name] = tau * online_VDN_dict[name].clone() + (1 - tau) * online_VDN_dict[name].clone() #3
+        
+        self.target_VDN.load_state_dict(online_VDN_dict)
+
+    
+        
         
         
         
