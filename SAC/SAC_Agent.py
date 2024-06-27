@@ -42,7 +42,7 @@ class SAC_Agent():
         self.tv_mf = files["tv_mf"]
         self.reward_scaler = reward_scaler
         
-        self.ADN = ADN(self.a_lr, self.input_size, self.fcl1_size, self.fcl2_size, self.actions_num, self.a_mf) 
+        self.ADN = ADN(self.a_lr, self.input_size, self.fcl1_size, self.fcl2_size, self.actions_num, self.actions_max, self.a_mf) 
         self.CDN1 = CDN(self.c_lr, self.input_size, self.fcl1_size, self.fcl2_size, self.actions_num, self.c_mf1)
         self.CDN2 = CDN(self.c_lr, self.input_size, self.fcl1_size, self.fcl2_size, self.actions_num, self.c_mf2)
         self.online_VDN = VDN(self.c_lr, self.input_size, self.fcl1_size, self.fcl2_size, self.ov_mf) 
@@ -54,7 +54,7 @@ class SAC_Agent():
         self.ADN.eval() #1
         
         state = T.tensor([state], dtype = T.float, device = self.ADN.device) #2
-        actions = self.ADN.sample_action(state, isReparamEnabled = False)
+        actions, log_probabilities = self.ADN.sample_action(state, isReparamEnabled = False)
         
         self.ADN.train()
         
@@ -92,50 +92,47 @@ class SAC_Agent():
     def learn(self): #4
         if self.memory.index < self.batch_size:
             return
-        
+
         states, actions, rewards, states_, dones = self.memory.sample(self.batch_size)
-        
+
         states = T.tensor(states, dtype=T.float).to(self.ADN.device)
         actions = T.tensor(actions, dtype=T.float).to(self.ADN.device)
         rewards = T.tensor(rewards, dtype=T.float).to(self.ADN.device)
         states_ = T.tensor(states_, dtype=T.float).to(self.ADN.device)
         dones = T.tensor(dones).to(self.ADN.device)
-        
-        online_v = self.online_VDN.forward(states)
-        online_v = online_v.view(-1) #5
-        target_v_ = self.target_VDN.forward(states_)
-        target_v_ = target_v_.view(-1)
+
+        online_v = self.online_VDN.forward(states).view(-1) #5
+        target_v_ = self.target_VDN.forward(states_).view(-1)
+        target_v_ = target_v_.clone()
         target_v_[dones] = 0.0
-        
-        actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled = False)
+
+        actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled=False)
         log_probabilities = log_probabilities.view(-1)
-        Q1 = self.CDN1.forward(states, actions)
-        Q2 = self.CDN2.forward(states, actions)
+        Q1 = self.CDN1.forward(states, actions).view(-1)
+        Q2 = self.CDN2.forward(states, actions).view(-1)
         Q = T.min(Q1, Q2)
-        Q = Q.view(-1)
         v_target = Q - log_probabilities
         v_loss = 0.5 * F.mse_loss(online_v, v_target)
         self.online_VDN.optimizer.zero_grad()
-        v_loss.backward(retain_graph = True)
+        v_loss.backward(retain_graph=True)
         self.online_VDN.optimizer.step()
-        
-        actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled = True)
+
+        actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled=True)
         log_probabilities = log_probabilities.view(-1)
-        Q1 = self.CDN1.forward(states, actions)
-        Q2 = self.CDN2.forward(states, actions)
+        Q1 = self.CDN1.forward(states, actions).view(-1)
+        Q2 = self.CDN2.forward(states, actions).view(-1)
         Q = T.min(Q1, Q2)
-        Q = Q.view(-1)
         actor_loss = log_probabilities - Q
         actor_loss = T.mean(actor_loss)
         self.ADN.optimizer.zero_grad()
-        actor_loss.backward(retain_graph = True)
+        actor_loss.backward(retain_graph=True)
         self.ADN.optimizer.step()
-        
+
         Q_ = self.reward_scaler * rewards + self.gamma * target_v_
-        Q1 = self.CDN1.forward(states, actions)
-        Q1 = Q1.view(-1)
-        Q2 = self.CDN2.forward(states, actions)
-        Q2 = Q2.view(-1)
+        Q_ = Q_.clone().detach()
+        actions, _ = self.ADN.sample_action(states, isReparamEnabled=True)
+        Q1 = self.CDN1.forward(states, actions).view(-1)
+        Q2 = self.CDN2.forward(states, actions).view(-1)
         critic1_loss = 0.5 * F.mse_loss(Q1, Q_)
         critic2_loss = 0.5 * F.mse_loss(Q2, Q_)
         critic_loss = critic1_loss + critic2_loss
@@ -144,6 +141,6 @@ class SAC_Agent():
         critic_loss.backward()
         self.CDN1.optimizer.step()
         self.CDN2.optimizer.step()
-        
+
         self.update_targets()    
-        
+            
