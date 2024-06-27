@@ -145,7 +145,5 @@ class SAC_Agent():
         self.CDN1.optimizer.step()
         self.CDN2.optimizer.step()
         
-        self.update_targets()
-        
-        
+        self.update_targets()    
         
