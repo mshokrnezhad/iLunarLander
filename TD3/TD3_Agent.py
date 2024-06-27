@@ -41,8 +41,8 @@ class TD3_Agent():
         self.c_lr = learning_rates["c_lr"]
         self.gamma = gamma
         self.tau = tau
-        self.action_max = sizes["action_max"]
-        self.action_min = sizes["action_min"]
+        self.actions_max = sizes["actions_max"]
+        self.actions_min = sizes["actions_min"]
         self.memory_size = sizes["memory_size"]
         self.input_size = sizes["input_size"]
         self.fcl1_size = sizes["fcl1_size"]
@@ -80,7 +80,7 @@ class TD3_Agent():
             state = T.tensor(state, dtype = T.float, device = self.target_ADN.device) #2
             mu_ = self.target_ADN.forward(state).to(self.target_ADN.device) #3
         mu = mu_ + T.tensor(np.random.normal(scale = self.noise), dtype=T.float).to(mu_.device) #4
-        mu = T.clamp(mu, min = self.action_min[0], max = self.action_max[0]) #5
+        mu = T.clamp(mu, min = self.action_min[0], max = self.actions_max[0]) #5
         
         self.time += 1
         self.target_ADN.train() #6
@@ -117,7 +117,7 @@ class TD3_Agent():
         
         target_mu_ = self.target_ADN.forward(states_)
         target_mu_ = target_mu_ + T.clamp(T.tensor(np.random.normal(scale = 0.2)), min = -0.5, max = 0.5)
-        target_mu_ = T.clamp(target_mu_, self.action_min[0], self.action_max[0])
+        target_mu_ = T.clamp(target_mu_, self.action_min[0], self.actions_max[0])
         
         target_Q1_ = self.target_CDN1.forward(states_, target_mu_)
         target_Q2_ = self.target_CDN2.forward(states_, target_mu_)

@@ -20,8 +20,8 @@ if __name__ == "__main__":
     learning_rates = {'a_lr': a_lr, 'c_lr': c_lr}
     gamma=0.99
     tau = 0.005
-    action_max = env.action_space.high
-    action_min = env.action_space.low
+    actions_max = env.action_space.high
+    actions_min = env.action_space.low
     input_size = env.observation_space.shape
     fcl1_size = 400 
     fcl2_size = 300
@@ -29,8 +29,8 @@ if __name__ == "__main__":
     memory_size = 1000000
     batch_size = 100
     sizes = {
-        'action_max': action_max, 
-        'action_min': action_min, 
+        'actions_max': actions_max, 
+        'actions_min': actions_min, 
         'memory_size': memory_size, 
         'input_size': input_size, 
         'fcl1_size': fcl1_size, 
