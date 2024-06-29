@@ -2,18 +2,19 @@ import sys
 import os
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(current_dir)
-#current_dir = "/users/mshokrne/iLunarLander/TD3"
+#current_dir = "/users/mshokrne/iLunarLander/SAC"
 #parent_dir = "/users/mshokrne/iLunarLander"
 sys.path.append(parent_dir)
 import gym 
+import pybullet_envs
 import matplotlib.pyplot as plt 
 import numpy as np
 from SAC_Agent import SAC_Agent
 from utils import save_frames_as_gif, plot_learning_curve
 
 if __name__ == "__main__":
-    env_name = "LunarLanderContinuous-v2"
-    env = gym.make(env_name, render_mode="rgb_array")
+    env_name = 'LunarLanderContinuous-v2'
+    env = gym.make(env_name)
     num_games = 1000
     a_lr = 0.0003
     c_lr = 0.0003

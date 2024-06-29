@@ -54,7 +54,7 @@ class SAC_Agent():
         self.ADN.eval() #1
         
         state = T.tensor([state], dtype = T.float, device = self.ADN.device) #2
-        actions, log_probabilities = self.ADN.sample_action(state, isReparamEnabled = False)
+        actions, _ = self.ADN.sample_action(state, isReparamEnabled = False)
         
         self.ADN.train()
         
@@ -85,7 +85,7 @@ class SAC_Agent():
         target_VDN_dict = dict(target_VDN_params)
         
         for name in online_VDN_dict:
-            online_VDN_dict[name] = tau * online_VDN_dict[name].clone() + (1 - tau) * online_VDN_dict[name].clone() #3
+            online_VDN_dict[name] = tau * online_VDN_dict[name].clone() + (1 - tau) * target_VDN_dict[name].clone() #3
         
         self.target_VDN.load_state_dict(online_VDN_dict)
         
@@ -95,49 +95,50 @@ class SAC_Agent():
 
         states, actions, rewards, states_, dones = self.memory.sample(self.batch_size)
 
-        states = T.tensor(states, dtype=T.float).to(self.ADN.device)
-        actions = T.tensor(actions, dtype=T.float).to(self.ADN.device)
-        rewards = T.tensor(rewards, dtype=T.float).to(self.ADN.device)
-        states_ = T.tensor(states_, dtype=T.float).to(self.ADN.device)
-        dones = T.tensor(dones).to(self.ADN.device)
+        states = T.tensor(states, dtype=T.float).to(self.CDN1.device)
+        actions = T.tensor(actions, dtype=T.float).to(self.CDN1.device)
+        rewards = T.tensor(rewards, dtype=T.float).to(self.CDN1.device)
+        states_ = T.tensor(states_, dtype=T.float).to(self.CDN1.device)
+        dones = T.tensor(dones).to(self.CDN1.device)
 
         online_v = self.online_VDN.forward(states).view(-1) #5
         target_v_ = self.target_VDN.forward(states_).view(-1)
         target_v_ = target_v_.clone()
         target_v_[dones] = 0.0
 
-        actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled=False)
+        new_actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled=False)
         log_probabilities = log_probabilities.view(-1)
-        Q1 = self.CDN1.forward(states, actions).view(-1)
-        Q2 = self.CDN2.forward(states, actions).view(-1)
+        Q1 = self.CDN1.forward(states, new_actions)
+        Q2 = self.CDN2.forward(states, new_actions)
         Q = T.min(Q1, Q2)
+        Q = Q.view(-1)
+        self.online_VDN.optimizer.zero_grad()
         v_target = Q - log_probabilities
         v_loss = 0.5 * F.mse_loss(online_v, v_target)
-        self.online_VDN.optimizer.zero_grad()
         v_loss.backward(retain_graph=True)
         self.online_VDN.optimizer.step()
 
-        actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled=True)
+        new_actions, log_probabilities = self.ADN.sample_action(states, isReparamEnabled=True)
         log_probabilities = log_probabilities.view(-1)
-        Q1 = self.CDN1.forward(states, actions).view(-1)
-        Q2 = self.CDN2.forward(states, actions).view(-1)
+        Q1 = self.CDN1.forward(states, new_actions)
+        Q2 = self.CDN2.forward(states, new_actions)
         Q = T.min(Q1, Q2)
+        Q = Q.view(-1)
+        self.ADN.optimizer.zero_grad()
         actor_loss = log_probabilities - Q
         actor_loss = T.mean(actor_loss)
-        self.ADN.optimizer.zero_grad()
         actor_loss.backward(retain_graph=True)
         self.ADN.optimizer.step()
-
+        
+        self.CDN1.optimizer.zero_grad()
+        self.CDN2.optimizer.zero_grad()
         Q_ = self.reward_scaler * rewards + self.gamma * target_v_
         Q_ = Q_.clone().detach()
-        actions, _ = self.ADN.sample_action(states, isReparamEnabled=True)
         Q1 = self.CDN1.forward(states, actions).view(-1)
         Q2 = self.CDN2.forward(states, actions).view(-1)
         critic1_loss = 0.5 * F.mse_loss(Q1, Q_)
         critic2_loss = 0.5 * F.mse_loss(Q2, Q_)
         critic_loss = critic1_loss + critic2_loss
-        self.CDN1.optimizer.zero_grad()
-        self.CDN2.optimizer.zero_grad()
         critic_loss.backward()
         self.CDN1.optimizer.step()
         self.CDN2.optimizer.step()
