@@ -14,7 +14,7 @@ from utils import save_frames_as_gif, plot_learning_curve
 
 if __name__ == "__main__":
     env_name = 'LunarLanderContinuous-v2'
-    env = gym.make(env_name)
+    env = gym.make(env_name, render_mode="rgb_array")
     num_games = 1000
     a_lr = 0.0003
     c_lr = 0.0003
@@ -53,21 +53,21 @@ if __name__ == "__main__":
     tv_mf = str(current_dir) + "/models/Target_" + value_file_name
     files = {'a_mf': a_mf, 'c_mf1': c_mf1, 'c_mf2': c_mf2, 'ov_mf': ov_mf, 'tv_mf': tv_mf}
     agent = SAC_Agent(learning_rates, gamma, tau, sizes, files, reward_scaler)
-    mode = "train" # select among {"train", "test"}
+    mode = "test" # select among {"train", "test"}
     
     if(mode == "train"): 
         scores = []
         best_avg_score = -np.inf
         
         for t in range(num_games):
-            state, _ = env.reset()
+            state = env.reset()
             done, trunc = False, False
             score = 0
             step = 0
             while not (done or trunc):
                 step += 1
                 action = agent.act(state)
-                state_, reward, done, trunc, info = env.step(action)
+                state_, reward, done, info = env.step(action)
                 terminal = done or trunc
                 agent.memory.store(state, action, reward, state_, terminal)
                 agent.learn()
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         step = 0
         while not (done or trunc):
             step += 1
-            action = agent.act(state, mode = "test")
+            action = agent.act(state)
             state_, reward, done, trunc, info = env.step(action)
             terminal = done or trunc
             score += reward 

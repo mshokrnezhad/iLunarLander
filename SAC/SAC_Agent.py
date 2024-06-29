@@ -53,7 +53,7 @@ class SAC_Agent():
     def act(self, state, mode = "train"):
         self.ADN.eval() #1
         
-        state = T.tensor([state], dtype = T.float, device = self.ADN.device) #2
+        state = T.tensor(state[np.newaxis, :], dtype = T.float, device = self.ADN.device) #2
         actions, _ = self.ADN.sample_action(state, isReparamEnabled = False)
         
         self.ADN.train()
