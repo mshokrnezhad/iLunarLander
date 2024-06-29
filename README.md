@@ -301,23 +301,33 @@ While TD3 has shown great performance in continuous action spaces, Soft Actor-Cr
 The SAC algorithm can be outlined as follows:
 
 ***
-1. **Initialize Networks**: Randomly initialize the policy (actor) network, two Q-networks (critics), and the value network, along with their target networks.
+1. Initialize the actor network $\pi_{\theta}(s)$, two critic networks $Q_{\omega_1}(s, a)$ and $Q_{\omega_2}(s, a)$, and the value network $V_{\psi}(s)$ with random weights $\theta$, $\omega_1$, $\omega_2$, and $\psi$ respectively.
 
-2. **Interact with the Environment**: Collect experiences by interacting with the environment using the current policy.
+2. Initialize target value network $V_{\psi'}$ with weights $\psi' \leftarrow \psi$.
 
-3. **Store Experiences**: Store the collected experiences (state, action, reward, next state, done) in a replay buffer.
+3. Initialize the replay buffer $\mathcal{R}$.
 
-4. **Sample from Replay Buffer**: Randomly sample a batch of experiences from the replay buffer.
+4. Receive the initial state $S_0$.
 
-5. **Compute Targets for Q-Functions**: Use the target value network to compute the target Q-values.
+5. For $t = 1, 2, ..., T$:
 
-6. **Update Q-Functions**: Minimize the loss between the Q-values predicted by the Q-networks and the target Q-values.
-
-7. **Update Value Network**: Minimize the loss between the value network's estimates and the Q-values minus the log-probabilities of the actions.
-
-8. **Update Policy**: Update the policy by maximizing the expected return plus the entropy term.
-
-9. **Update Target Networks**: Soft update the target networks to slowly track the learned networks.
+   - Select action $A_t \sim \pi_{\theta}(A_t | S_t)$ according to the current policy.
+     
+   - Execute action $A_t$ and observe reward $R_t$ and new state $S_{t+1}$.
+     
+   - Store transition $(S_t, A_t, R_t, S_{t+1})$ in the replay buffer $\mathcal{R}$.
+     
+   - Sample a random mini-batch of $N$ transitions from the replay buffer, where transition $i$ is $(S_i, A_i, R_i, S_i')$.
+   
+   - Compute target value: $y_i = R_i + \gamma (1 - d_i) V_{\psi'}(S_i')$, where $d_i$ is a done signal (1 if the episode is done, else 0).
+   
+   - Update critics by minimizing the loss: $L_{\omega_1} = \frac{1}{N} \sum_i (y_i - Q_{\omega_1}(S_i, A_i))^2$ and $L_{\omega_2} = \frac{1}{N} \sum_i (y_i - Q_{\omega_2}(S_i, A_i))^2$.
+   
+   - Update value network by minimizing the loss: $L_{\psi} = \frac{1}{N} \sum_i \left( V_{\psi}(S_i) - \left( \min(Q_{\omega_1}(S_i, A_i), Q_{\omega_2}(S_i, A_i)) - \alpha \log \pi_{\theta}(A_i | S_i) \right) \right)^2$.
+   
+   - Update the actor policy using the sampled policy gradient: $\nabla_{\theta} J \approx \frac{1}{N} \sum_i \left( \alpha \log \pi_{\theta}(A_i | S_i) - Q_{\omega_1}(S_i, A_i) \right) \nabla_{\theta} \log \pi_{\theta}(A_i | S_i)$.
+   
+   - Soft update the target value network: $\psi' \leftarrow \tau \psi + (1 - \tau) \psi'$.
 ***
 
 ### Implementation Details
