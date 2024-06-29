@@ -269,7 +269,7 @@ The following .gif file demonstrates the performance of the lunar lander over 10
 
 ## [SAC](SAC)
 
-While TD3 has shown great performance in continuous action spaces, Soft Actor-Critic (SAC) introduces further improvements by incorporating entropy maximization into the policy learning process. This addition helps SAC achieve more stable and robust performance compared to TD3. SAC, as described in [this paper](https://arxiv.org/abs/1801.01290), leverages three key networks: the actor, the critics, and the value network, each contributing to its enhanced performance.
+While TD3 has shown great performance in continuous action spaces, Soft Actor-Critic (SAC) shows great performance by incorporating entropy maximization into the policy learning process. This addition helps SAC achieve (a little bit) more stable and robust performance compared to TD3. SAC, as described in [this paper](https://arxiv.org/abs/1801.01290), leverages three key networks: the actor, the critics, and the value network, each contributing to its enhanced performance.
 
 ### Key Differences Between SAC and TD3
 
