@@ -11,6 +11,8 @@ Training [LunarLander-v2 of GYM](https://gymnasium.farama.org/environments/box2d
 * [REINFORCE](#reinforce)
 * [TD-ActorCritic](#td-actorcritic)
 * [DDPG](#ddpg)
+* [TD3](#td3)
+* [SAC](#sac)
 
 ## Policy Gradient
 
@@ -263,6 +265,77 @@ The following .gif file demonstrates the performance of the lunar lander over 10
 
 <div align="center">
   <img src="TD3/plots/TD3_LunarLanderContinuous-v2_0.001_0.001_1000.gif" alt="drawing" width="400"/>
+</div>
+
+## [SAC](SAC)
+
+While TD3 has shown great performance in continuous action spaces, Soft Actor-Critic (SAC) introduces further improvements by incorporating entropy maximization into the policy learning process. This addition helps SAC achieve more stable and robust performance compared to TD3. SAC, as described in [this paper](https://arxiv.org/abs/1801.01290), leverages three key networks: the actor, the critics, and the value network, each contributing to its enhanced performance.
+
+### Key Differences Between SAC and TD3
+
+1. **Entropy Regularization**:
+   - **SAC**: Incorporates an entropy term in the objective function, encouraging exploration by maximizing the entropy of the policy. This leads to a more stochastic policy, which can handle multi-modal action distributions and provides better exploration.
+   - **TD3**: Does not explicitly encourage exploration through entropy regularization.
+
+2. **Stochastic vs. Deterministic Policy**:
+   - **SAC**: Uses a stochastic policy, outputting a probability distribution over actions given a state. This approach promotes exploration and helps prevent premature convergence to suboptimal policies.
+   - **TD3**: Uses a deterministic policy, outputting a single action for each state.
+
+3. **Critic Networks**:
+   - **Both**: Utilize two Q-networks to reduce overestimation bias in the Q-value estimates. However, the use of entropy in SAC provides an additional layer of robustness to the value estimates.
+
+4. **Target Policy Smoothing**:
+   - **SAC**: Does not use target policy smoothing as in TD3. Instead, the stochastic nature of the policy itself helps in achieving smooth policy updates.
+   - **TD3**: Applies noise to the target actions to smooth the Q-value estimates and reduce variance in updates.
+
+### Key Components of SAC
+
+1. **Actor Network**: The actor network outputs the mean (`mu`) and standard deviation (`sigma`) of a Gaussian distribution over actions given a state. This network is responsible for sampling actions during training and evaluation, promoting exploration through its stochastic policy.
+
+2. **Critic Networks**: SAC uses two Q-networks (critics) to estimate the Q-values for state-action pairs. The dual critics help mitigate overestimation bias, enhancing the stability of the value estimates.
+
+3. **Value Network**: The value network estimates the value of a given state. By providing a stable estimate of state values, this network helps compute consistent Q-value targets, contributing to the overall stability of the learning process.
+
+### Algorithm
+
+The SAC algorithm can be outlined as follows:
+
+***
+1. **Initialize Networks**: Randomly initialize the policy (actor) network, two Q-networks (critics), and the value network, along with their target networks.
+
+2. **Interact with the Environment**: Collect experiences by interacting with the environment using the current policy.
+
+3. **Store Experiences**: Store the collected experiences (state, action, reward, next state, done) in a replay buffer.
+
+4. **Sample from Replay Buffer**: Randomly sample a batch of experiences from the replay buffer.
+
+5. **Compute Targets for Q-Functions**: Use the target value network to compute the target Q-values.
+
+6. **Update Q-Functions**: Minimize the loss between the Q-values predicted by the Q-networks and the target Q-values.
+
+7. **Update Value Network**: Minimize the loss between the value network's estimates and the Q-values minus the log-probabilities of the actions.
+
+8. **Update Policy**: Update the policy by maximizing the expected return plus the entropy term.
+
+9. **Update Target Networks**: Soft update the target networks to slowly track the learned networks.
+***
+
+### Implementation Details
+
+This process is implemented in [SAC_Agent.py](SAC/SAC_Agent.py). The actor, critic, and value networks are defined in [ADN.py](SAC/ADN.py), [CDN.py](SAC/CDN.py), and [VDN.py](SAC/VDN.py) respectively. The replay buffer is managed by [Memory.py](SAC/Memory.py).
+
+### Outcomes
+
+The average scores (total rewards accumulated) of the lunar lander over 1000 training steps are illustrated below. SAC's ability to maintain stability and robustness throughout the training process makes it an excellent choice for the LunarLander environment.
+
+<div align="center">
+  <img src="SAC/plots/SAC_LunarLanderContinuous-v2_0.0003_0.0003_1000.png" alt="drawing" width="400"/>
+</div>
+
+The following .gif file demonstrates the performance of the lunar lander over 1000 training steps:
+
+<div align="center">
+  <img src="SAC/plots/SAC_LunarLanderContinuous-v2_0.0003_0.0003_1000.gif" alt="drawing" width="400"/>
 </div>
 
 ## Getting Started
